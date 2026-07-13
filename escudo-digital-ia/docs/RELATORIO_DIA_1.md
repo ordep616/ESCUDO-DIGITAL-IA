@@ -1,4 +1,4 @@
-# Relatório - Dia X
+# Relatório - Dia 1
 
 ## Objetivo do dia
  [ ] Definir o público principal e três situações reais em que o produto ajudaria.
