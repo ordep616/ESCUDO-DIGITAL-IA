@@ -1,4 +1,4 @@
-"""Comunicação segura com a API de inteligência artificial."""
+"""Comunicação segura com a API de inteligência Artificial."""
 
 import os
 from pathlib import Path
