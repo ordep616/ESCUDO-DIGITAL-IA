@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "escudo-digital-ia"
+version = "0.1.0"
+description = "Assistente educativo para ajudar a reconhecer possiveis golpes digitais."
+authors = ["Enrico Fontoura"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
