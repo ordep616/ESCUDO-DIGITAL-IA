@@ -1,1 +1,242 @@
-[]
+[
+  {
+    "id": "caso_01",
+    "categoria": "alto_risco",
+    "mensagem": "Sua conta será bloqueada hoje. Acesse https://exemplo-invalido.test e informe sua senha.",
+    "classificacao_esperada": "alto_risco",
+    "sinais_esperados": ["urgencia", "ameaca", "link", "pedido_de_senha"],
+    "justificativa": "A mensagem pressiona o usuário, apresenta um link e solicita uma informação sigilosa."
+  },
+  {
+    "id": "caso_02",
+    "categoria": "alto_risco",
+    "mensagem": "Detectamos uma invasão. Envie imediatamente o código recebido por SMS para proteger sua conta.",
+    "classificacao_esperada": "alto_risco",
+    "sinais_esperados": ["urgencia", "ameaca", "pedido_de_codigo"],
+    "justificativa": "Instituições legítimas não solicitam códigos de autenticação por mensagem."
+  },
+  {
+    "id": "caso_03",
+    "categoria": "alto_risco",
+    "mensagem": "Sou seu primo e troquei de número. Faça um PIX agora e não ligue porque estou em reunião.",
+    "classificacao_esperada": "alto_risco",
+    "sinais_esperados": ["imitacao", "urgencia", "pedido_de_dinheiro", "impedimento_de_verificacao"],
+    "justificativa": "A mensagem imita um familiar, pede dinheiro com urgência e tenta impedir a confirmação da identidade."
+  },
+  {
+    "id": "caso_04",
+    "categoria": "alto_risco",
+    "mensagem": "Você ganhou um prêmio de dez mil reais. Pague uma taxa hoje para liberar o valor.",
+    "classificacao_esperada": "alto_risco",
+    "sinais_esperados": ["recompensa", "urgencia", "pagamento_antecipado"],
+    "justificativa": "A promessa de prêmio é condicionada a um pagamento antecipado e urgente."
+  },
+  {
+    "id": "caso_05",
+    "categoria": "alto_risco",
+    "mensagem": "Há uma dívida em seu nome e o processo começa hoje. Envie seus dados bancários para cancelar.",
+    "classificacao_esperada": "alto_risco",
+    "sinais_esperados": ["ameaca", "urgencia", "pedido_de_dados_bancarios"],
+    "justificativa": "A mensagem usa medo e urgência para obter dados bancários."
+  },
+  {
+    "id": "caso_06",
+    "categoria": "alto_risco",
+    "mensagem": "Seu pacote está retido. Informe o número completo do cartão em https://entrega-invalida.test para pagar a taxa.",
+    "classificacao_esperada": "alto_risco",
+    "sinais_esperados": ["imitacao", "link", "pedido_de_cartao", "pedido_de_pagamento"],
+    "justificativa": "A mensagem imita uma entrega e solicita cartão e pagamento em um link externo."
+  },
+  {
+    "id": "caso_07",
+    "categoria": "alto_risco",
+    "mensagem": "Oferta exclusiva por cinco minutos. Confirme seu CPF e a senha do aplicativo para receber o desconto.",
+    "classificacao_esperada": "alto_risco",
+    "sinais_esperados": ["urgencia", "recompensa", "pedido_de_cpf", "pedido_de_senha"],
+    "justificativa": "A oferta cria pressão de tempo e solicita dados pessoais e senha."
+  },
+  {
+    "id": "caso_08",
+    "categoria": "alto_risco",
+    "mensagem": "Não conte a ninguém. Compre cartões-presente e envie as fotos dos códigos ainda hoje.",
+    "classificacao_esperada": "alto_risco",
+    "sinais_esperados": ["pedido_de_segredo", "urgencia", "pedido_de_pagamento", "pedido_de_codigo"],
+    "justificativa": "Pedidos de segredo, compra de cartões e envio de códigos são sinais fortes de fraude."
+  },
+  {
+    "id": "caso_09",
+    "categoria": "alto_risco",
+    "mensagem": "Sua rede social será excluída. Abra https://login-invalido.test e confirme o e-mail e a senha agora.",
+    "classificacao_esperada": "alto_risco",
+    "sinais_esperados": ["ameaca", "urgencia", "link", "pedido_de_credenciais"],
+    "justificativa": "A mensagem ameaça excluir a conta e direciona para um link que pede credenciais."
+  },
+  {
+    "id": "caso_10",
+    "categoria": "alto_risco",
+    "mensagem": "O suporte precisa acessar seu computador para remover um vírus. Instale o programa enviado e informe o código de acesso.",
+    "classificacao_esperada": "alto_risco",
+    "sinais_esperados": ["imitacao", "instalacao_de_programa", "acesso_remoto", "pedido_de_codigo"],
+    "justificativa": "A mensagem tenta obter acesso remoto ao dispositivo por meio de um programa e de um código."
+  },
+  {
+    "id": "caso_11",
+    "categoria": "risco_moderado",
+    "mensagem": "Existe uma cobrança pendente em seu nome. Entre em contato para mais informações.",
+    "classificacao_esperada": "moderado",
+    "sinais_esperados": ["cobranca_sem_identificacao", "falta_de_contexto"],
+    "justificativa": "A mensagem não identifica a empresa, mas também não solicita dados nem apresenta link."
+  },
+  {
+    "id": "caso_12",
+    "categoria": "risco_moderado",
+    "mensagem": "Seu cadastro precisa ser atualizado em breve. Procure nosso atendimento para evitar problemas.",
+    "classificacao_esperada": "moderado",
+    "sinais_esperados": ["alerta_generico", "falta_de_identificacao"],
+    "justificativa": "O aviso é vago e não identifica claramente a organização ou o cadastro."
+  },
+  {
+    "id": "caso_13",
+    "categoria": "risco_moderado",
+    "mensagem": "Tentamos entregar sua encomenda, mas o endereço parece incompleto. Verifique a situação pelos canais da transportadora.",
+    "classificacao_esperada": "moderado",
+    "sinais_esperados": ["entrega_nao_confirmada"],
+    "justificativa": "Pode ser um aviso legítimo, mas a pessoa deve confirmar se realmente espera uma encomenda."
+  },
+  {
+    "id": "caso_14",
+    "categoria": "risco_moderado",
+    "mensagem": "Foi identificada uma compra diferente do seu padrão. Consulte o aplicativo oficial quando puder.",
+    "classificacao_esperada": "moderado",
+    "sinais_esperados": ["alerta_financeiro"],
+    "justificativa": "O alerta pode ser legítimo e orienta o uso do aplicativo oficial, mas deve ser verificado."
+  },
+  {
+    "id": "caso_15",
+    "categoria": "risco_moderado",
+    "mensagem": "Você foi selecionado para uma oportunidade de trabalho. Responda para conhecer os detalhes da vaga.",
+    "classificacao_esperada": "moderado",
+    "sinais_esperados": ["oferta_nao_solicitada", "falta_de_identificacao"],
+    "justificativa": "A oferta não solicitada e sem identificação exige cautela, embora não peça dados ou dinheiro."
+  },
+  {
+    "id": "caso_16",
+    "categoria": "risco_moderado",
+    "mensagem": "Há um documento aguardando sua assinatura. Confirme com o remetente antes de prosseguir.",
+    "classificacao_esperada": "moderado",
+    "sinais_esperados": ["documento_nao_esperado"],
+    "justificativa": "Um documento inesperado deve ser verificado, mas a própria mensagem recomenda confirmar o remetente."
+  },
+  {
+    "id": "caso_17",
+    "categoria": "legitima",
+    "mensagem": "A aula de amanhã começará às 9 horas na sala 4. Consulte o calendário já disponibilizado pela escola.",
+    "classificacao_esperada": "baixo_risco",
+    "sinais_esperados": [],
+    "justificativa": "É um aviso informativo, sem link, ameaça ou solicitação de dados."
+  },
+  {
+    "id": "caso_18",
+    "categoria": "legitima",
+    "mensagem": "Lembrete: sua consulta previamente agendada será amanhã às 14 horas. Caso necessário, ligue para a clínica pelo número oficial.",
+    "classificacao_esperada": "baixo_risco",
+    "sinais_esperados": [],
+    "justificativa": "A mensagem menciona um compromisso esperado e orienta a usar um canal oficial."
+  },
+  {
+    "id": "caso_19",
+    "categoria": "legitima",
+    "mensagem": "A reunião semanal da equipe foi transferida para sexta-feira às 10 horas na sala habitual.",
+    "classificacao_esperada": "baixo_risco",
+    "sinais_esperados": [],
+    "justificativa": "É uma atualização de agenda sem pedido de dados, dinheiro ou acesso externo."
+  },
+  {
+    "id": "caso_20",
+    "categoria": "legitima",
+    "mensagem": "Seu pedido foi entregue no endereço informado. Consulte o histórico diretamente no aplicativo em que realizou a compra.",
+    "classificacao_esperada": "baixo_risco",
+    "sinais_esperados": [],
+    "justificativa": "A mensagem não apresenta link e orienta a consultar o aplicativo oficial."
+  },
+  {
+    "id": "caso_21",
+    "categoria": "legitima",
+    "mensagem": "A biblioteca informa que o livro reservado já está disponível para retirada durante o horário normal.",
+    "classificacao_esperada": "baixo_risco",
+    "sinais_esperados": [],
+    "justificativa": "É um aviso esperado e não solicita informação pessoal ou pagamento."
+  },
+  {
+    "id": "caso_22",
+    "categoria": "legitima",
+    "mensagem": "O condomínio realizará manutenção no elevador na terça-feira, das 8 às 12 horas.",
+    "classificacao_esperada": "baixo_risco",
+    "sinais_esperados": [],
+    "justificativa": "É uma comunicação informativa sem elementos de pressão ou solicitação perigosa."
+  },
+  {
+    "id": "caso_23",
+    "categoria": "legitima",
+    "mensagem": "Recebemos sua inscrição no curso. O resultado será publicado no portal oficial na próxima semana.",
+    "classificacao_esperada": "baixo_risco",
+    "sinais_esperados": [],
+    "justificativa": "A confirmação não pede dados adicionais e direciona genericamente ao portal oficial."
+  },
+  {
+    "id": "caso_24",
+    "categoria": "legitima",
+    "mensagem": "Seu extrato mensal está disponível. Abra o aplicativo oficial do banco para consultá-lo.",
+    "classificacao_esperada": "baixo_risco",
+    "sinais_esperados": [],
+    "justificativa": "A mensagem não contém link nem solicita credenciais e recomenda o aplicativo oficial."
+  },
+  {
+    "id": "caso_25",
+    "categoria": "ambigua",
+    "mensagem": "Precisamos conversar sobre sua solicitação. Responda quando puder.",
+    "classificacao_esperada": "informacao_insuficiente",
+    "sinais_esperados": ["falta_de_contexto"],
+    "justificativa": "Não existem informações suficientes para identificar o remetente ou a solicitação."
+  },
+  {
+    "id": "caso_26",
+    "categoria": "ambigua",
+    "mensagem": "Olá, você ainda tem interesse?",
+    "classificacao_esperada": "informacao_insuficiente",
+    "sinais_esperados": ["falta_de_contexto"],
+    "justificativa": "A mensagem não contém pedido perigoso, mas também não explica o assunto."
+  },
+  {
+    "id": "caso_27",
+    "categoria": "ambigua",
+    "mensagem": "Seu pedido está aguardando confirmação.",
+    "classificacao_esperada": "informacao_insuficiente",
+    "sinais_esperados": ["pedido_nao_identificado", "falta_de_contexto"],
+    "justificativa": "Não há informação sobre qual pedido, empresa ou ação de confirmação seria necessária."
+  },
+  {
+    "id": "caso_28",
+    "categoria": "ambigua",
+    "mensagem": "Tivemos um problema com o seu cadastro. Fale conosco.",
+    "classificacao_esperada": "informacao_insuficiente",
+    "sinais_esperados": ["cadastro_nao_identificado", "falta_de_contexto"],
+    "justificativa": "A origem e o cadastro mencionado não podem ser identificados pela mensagem."
+  },
+  {
+    "id": "caso_29",
+    "categoria": "ambigua",
+    "mensagem": "A reunião mudou. Veja a nova informação quando estiver disponível.",
+    "classificacao_esperada": "informacao_insuficiente",
+    "sinais_esperados": ["evento_nao_identificado", "falta_de_contexto"],
+    "justificativa": "A mensagem não informa qual reunião, quem enviou ou onde verificar a alteração."
+  },
+  {
+    "id": "caso_30",
+    "categoria": "ambigua",
+    "mensagem": "Há uma novidade importante para você. Entre em contato para saber mais.",
+    "classificacao_esperada": "informacao_insuficiente",
+    "sinais_esperados": ["mensagem_generica", "falta_de_contexto"],
+    "justificativa": "A mensagem é vaga e não apresenta informação suficiente para avaliar sua legitimidade."
+  }
+]
