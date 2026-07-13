@@ -1,0 +1,9 @@
+{
+  "total_chamadas": 0,
+  "total_caracteres_entrada": 0,
+  "total_tokens_aproximados": 0,
+  "media_caracteres_por_chamada": 0,
+  "media_tokens_aproximados_por_chamada": 0,
+  "ultima_entrada_caracteres": 0,
+  "ultima_entrada_tokens_aproximados": 0
+}
