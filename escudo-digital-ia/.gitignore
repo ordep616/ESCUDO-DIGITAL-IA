@@ -1,1 +1,35 @@
+# Segredos e configuração local
+.env
+.env.*
+!.env.example
 
+# Ambiente virtual
+.venv/
+venv/
+env/
+
+# Cache e artefatos do Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Distribuição e empacotamento
+build/
+dist/
+*.egg-info/
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# macOS
+.DS_Store
+
+# Metadados Git locais antigos
+.git.backup/
