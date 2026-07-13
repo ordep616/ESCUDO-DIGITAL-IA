@@ -1,7 +1,7 @@
 # Escudo Digital IA
 
 O Escudo Digital IA é um projeto educativo de segurança digital que analisa
-mensagens fictícias ou previamente anonimizadas. Seu objetivo é ajudar pessoas
+mensagens fictícias ou previamente anonimizadas. seu objetivo é ajudar pessoas
 a reconhecer sinais comuns de golpes, como urgência, ameaças, pedidos de
 dinheiro, solicitação de códigos e imitação de instituições.
 
