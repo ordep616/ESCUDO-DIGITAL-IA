@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from storage import registrar_consumo_basico
-
 import json
 from collections.abc import Callable
 from typing import Any
@@ -12,6 +10,8 @@ from ai_service import AIServiceError, analisar_mensagem
 from interface import formatar_resultado, texto_introducao
 from privacy import anonimizar_cpf_telefone
 from prompts import SYSTEM_PROMPT_V1
+from safety import validar_mensagem_usuario
+from storage import registrar_consumo_basico
 from validator import validar_resposta_ia
 
 
@@ -21,10 +21,8 @@ class RespostaIAInvalidaError(Exception):
 
 def processar_mensagem(mensagem: str, cliente: Any = None) -> dict[str, Any]:
     """Anonimiza, consulta a IA e valida a resposta estruturada."""
-    if not isinstance(mensagem, str) or not mensagem.strip():
-        raise ValueError("Digite uma mensagem fictícia para analisar.")
-
-    mensagem_segura = anonimizar_cpf_telefone(mensagem.strip())
+    mensagem_validada = validar_mensagem_usuario(mensagem)
+    mensagem_segura = anonimizar_cpf_telefone(mensagem_validada)
     resposta_textual = analisar_mensagem(
         mensagem_segura,
         SYSTEM_PROMPT_V1,

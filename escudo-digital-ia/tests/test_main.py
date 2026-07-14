@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 from ai_service import AIUnavailableError
 from main import RespostaIAInvalidaError, executar_cli, processar_mensagem
+from safety import LIMITE_CARACTERES_MENSAGEM
 
 
 RESPOSTA_VALIDA = {
@@ -43,6 +44,21 @@ class MainTests(unittest.TestCase):
         processar_mensagem("Meu CPF é 123.456.789-00")
 
         registrar.assert_called_once_with("Meu CPF é [CPF OCULTADO]")
+
+    @patch("main.registrar_consumo_basico")
+    @patch("main.analisar_mensagem")
+    def test_rejeita_mensagem_grande_sem_chamar_ia(
+        self,
+        analisar,
+        registrar,
+    ) -> None:
+        mensagem = "a" * (LIMITE_CARACTERES_MENSAGEM + 1)
+
+        with self.assertRaisesRegex(ValueError, "grande demais"):
+            processar_mensagem(mensagem)
+
+        analisar.assert_not_called()
+        registrar.assert_not_called()
 
     @patch("main.registrar_consumo_basico")
     @patch("main.analisar_mensagem", return_value="não é json")
