@@ -31,7 +31,7 @@ def processar_mensagem(mensagem: str, cliente: Any = None) -> dict[str, Any]:
         cliente,
     )
 
-   registrar_consumo_basico(mensagem_segura)
+    registrar_consumo_basico(mensagem_segura)
 
     try:
         resposta = json.loads(resposta_textual)

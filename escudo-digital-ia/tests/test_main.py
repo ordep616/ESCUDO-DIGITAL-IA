@@ -19,8 +19,9 @@ RESPOSTA_VALIDA = {
 
 
 class MainTests(unittest.TestCase):
+    @patch("main.registrar_consumo_basico")
     @patch("main.analisar_mensagem")
-    def test_processa_mensagem_anonimizada(self, analisar) -> None:
+    def test_processa_mensagem_anonimizada(self, analisar, _registrar) -> None:
         analisar.return_value = json.dumps(RESPOSTA_VALIDA)
 
         resultado = processar_mensagem("Meu CPF é 123.456.789-00")
@@ -30,13 +31,28 @@ class MainTests(unittest.TestCase):
         self.assertIn("[CPF OCULTADO]", mensagem_enviada)
         self.assertNotIn("123.456.789-00", mensagem_enviada)
 
+    @patch("main.registrar_consumo_basico")
+    @patch("main.analisar_mensagem")
+    def test_registra_consumo_com_mensagem_anonimizada(
+        self,
+        analisar,
+        registrar,
+    ) -> None:
+        analisar.return_value = json.dumps(RESPOSTA_VALIDA)
+
+        processar_mensagem("Meu CPF é 123.456.789-00")
+
+        registrar.assert_called_once_with("Meu CPF é [CPF OCULTADO]")
+
+    @patch("main.registrar_consumo_basico")
     @patch("main.analisar_mensagem", return_value="não é json")
-    def test_rejeita_json_invalido(self, _analisar) -> None:
+    def test_rejeita_json_invalido(self, _analisar, _registrar) -> None:
         with self.assertRaises(RespostaIAInvalidaError):
             processar_mensagem("mensagem fictícia")
 
+    @patch("main.registrar_consumo_basico")
     @patch("main.analisar_mensagem")
-    def test_rejeita_resposta_incompleta(self, analisar) -> None:
+    def test_rejeita_resposta_incompleta(self, analisar, _registrar) -> None:
         analisar.return_value = json.dumps({"classificacao": "alto_risco"})
 
         with self.assertRaises(RespostaIAInvalidaError):
