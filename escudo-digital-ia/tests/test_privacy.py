@@ -1,8 +1,8 @@
-"""Testes da anonimização de CPF e telefone."""
+"""Testes da anonimização de dados sensíveis."""
 
 import unittest
 
-from privacy import anonimizar_cpf_telefone
+from privacy import anonimizar_cpf_telefone, anonimizar_dados_sensiveis
 
 
 class AnonimizarCpfTelefoneTests(unittest.TestCase):
@@ -61,6 +61,40 @@ class AnonimizarCpfTelefoneTests(unittest.TestCase):
     def test_rejeita_entrada_que_nao_seja_string(self) -> None:
         with self.assertRaisesRegex(TypeError, "texto deve ser uma string"):
             anonimizar_cpf_telefone(None)  # type: ignore[arg-type]
+
+    def test_anonimiza_email(self) -> None:
+        resultado = anonimizar_dados_sensiveis(
+            "Contato: teste@example.com"
+        )
+
+        self.assertEqual(resultado, "Contato: [E-MAIL OCULTADO]")
+
+    def test_anonimiza_cartao(self) -> None:
+        resultado = anonimizar_dados_sensiveis(
+            "Cartão fictício: 4111 1111 1111 1111"
+        )
+
+        self.assertEqual(
+            resultado,
+            "Cartão fictício: [CARTÃO OCULTADO]",
+        )
+
+    def test_anonimiza_codigo_de_autenticacao(self) -> None:
+        resultado = anonimizar_dados_sensiveis(
+            "Código de verificação: 483921"
+        )
+
+        self.assertEqual(
+            resultado,
+            "Código de verificação: [CÓDIGO OCULTADO]",
+        )
+
+    def test_anonimiza_link(self) -> None:
+        resultado = anonimizar_dados_sensiveis(
+            "Acesse https://exemplo-invalido.test/confirmar"
+        )
+
+        self.assertEqual(resultado, "Acesse [LINK OCULTADO]")
 
 
 if __name__ == "__main__":
