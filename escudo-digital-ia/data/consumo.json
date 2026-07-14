@@ -1,9 +1,9 @@
 {
-  "total_chamadas": 5,
-  "total_caracteres_entrada": 425,
-  "total_tokens_aproximados": 109,
-  "media_caracteres_por_chamada": 85.0,
-  "media_tokens_aproximados_por_chamada": 21.8,
-  "ultima_entrada_caracteres": 66,
-  "ultima_entrada_tokens_aproximados": 17
+  "total_chamadas": 20,
+  "total_caracteres_entrada": 1646,
+  "total_tokens_aproximados": 421,
+  "media_caracteres_por_chamada": 82.3,
+  "media_tokens_aproximados_por_chamada": 21.05,
+  "ultima_entrada_caracteres": 71,
+  "ultima_entrada_tokens_aproximados": 18
 }
