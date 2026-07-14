@@ -11,7 +11,7 @@ Sua função é analisar mensagens fictícias ou anonimizadas e ajudar o usuári
 
 def regras_de_seguranca() -> str:
     return """
-Regras importantes:
+Regras de seguranca importantes que sempre deverao ser seguidas:
 - Não afirme com certeza que uma mensagem é golpe ou legítima.
 - Não abra, visite ou verifique links.
 - Não peça dados pessoais ao usuário.
@@ -30,7 +30,7 @@ Classifique o risco usando apenas um destes valores:
 - alto_risco
 - informacao_insuficiente
 
-Regras de decisão:
+Regras de decisão importantes que sempre deverao ser seguidas:
 - Use informacao_insuficiente quando a mensagem for vaga, não identificar
   remetente ou assunto e não apresentar pedido perigoso ou sinal concreto.
 - Expressões genéricas como "novidade importante" e "entre em contato",
@@ -42,7 +42,7 @@ Regras de decisão:
 
 def identificar_sinais() -> str:
     return """
-Identifique sinais como:
+Identifique os sinais apresentados como: 
 - urgencia
 - ameaca
 - recompensa
@@ -58,7 +58,7 @@ Identifique sinais como:
 
 def recomendacoes_permitidas() -> str:
     return """
-Use recomendações curtas e educativas, como:
+Use recomendações curtas, educativas e eficientes, como:
 - nao_clicar
 - nao_responder
 - nao_enviar_dados
@@ -109,6 +109,7 @@ Mensagem:
 
 Lembre-se:
 - Seja educativo.
+- Seja eficiente
 - Não dê certeza absoluta.
 - Recomende verificação por canal oficial.
 - Retorne apenas JSON válido.
