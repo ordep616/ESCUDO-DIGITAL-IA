@@ -34,17 +34,17 @@ Atualmente, o projeto possui:
 - integração com o OpenRouter usando o SDK da OpenAI;
 - resposta estruturada e validada em JSON;
 - tratamento de timeout, autenticação e indisponibilidade da API;
+- interface de terminal com apresentação amigável do resultado;
 - armazenamento de métricas básicas sem salvar a mensagem integral;
 - testes automáticos para API, privacidade, armazenamento e validação.
 
-Ainda não existe uma interface de terminal ou interface gráfica completa. Os
-arquivos `main.py`, `interface.py`, `safety.py` e `evaluator.py` ainda precisam
-ser implementados. Por isso, neste momento o projeto é executado por testes ou
-por uma chamada direta aos módulos Python.
+A interface de terminal já executa o fluxo de anonimização, consulta e
+validação. Os módulos `safety.py` e `evaluator.py` ainda precisam ser
+implementados.
 
 ## Requisitos
 
-- Python 3.9 ou superior;
+- Python 3.11 ou superior;
 - acesso ao terminal;
 - uma chave de API do OpenRouter para chamadas reais;
 - créditos e acesso ao modelo escolhido no OpenRouter.
@@ -115,11 +115,11 @@ git check-ignore -v .env
 
 ## Comandos disponíveis
 
-O projeto ainda não oferece comandos próprios de uma aplicação CLI. Os
-principais comandos de desenvolvimento disponíveis são:
+Os principais comandos disponíveis são:
 
 | Comando | Finalidade |
 | --- | --- |
+| `poetry run python main.py` | Executar a interface de terminal. |
 | `python3 -m unittest discover -s tests -v` | Executar todos os testes automáticos. |
 | `python3 -m unittest discover -s tests -p 'test_ai_service.py' -v` | Testar somente o serviço de IA sem chamada externa. |
 | `python3 -m unittest discover -s tests -p 'test_privacy.py' -v` | Testar a anonimização de CPF e telefone. |
@@ -127,9 +127,16 @@ principais comandos de desenvolvimento disponíveis são:
 
 ## Como rodar o projeto
 
-Como a interface principal ainda não foi implementada, executar
-`python3 main.py` não inicia uma aplicação neste momento. Para verificar o
-projeto sem consumir créditos, execute a suíte de testes:
+Execute a interface de terminal com:
+
+```bash
+poetry run python main.py
+```
+
+Cole somente uma mensagem fictícia ou previamente anonimizada quando o terminal
+solicitar. A execução realiza uma chamada real e pode consumir créditos.
+
+Para verificar o projeto sem consumir créditos, execute a suíte de testes:
 
 ```bash
 python3 -m unittest discover -s tests -v
@@ -173,15 +180,14 @@ autenticação, dados bancários ou outras informações pessoais.
 - A anonimização atual cobre somente CPF e telefone brasileiro.
 - E-mail, cartão, links e códigos de autenticação ainda não são anonimizados.
 - A camada geral de segurança em `safety.py` ainda não foi implementada.
-- A interface e o fluxo completo em `main.py` ainda não foram implementados.
+- A interface de terminal ainda não aplica uma camada completa de `safety.py`.
 - O avaliador de resultados ainda não foi implementado.
 - O projeto depende da disponibilidade, das regras e dos créditos do OpenRouter.
 - O modelo configurado precisa oferecer suporte à saída estruturada solicitada.
 
 ## Melhorias futuras
 
-- implementar o fluxo principal em `main.py`;
-- criar uma interface segura e acessível;
+- evoluir a interface de terminal e torná-la mais acessível;
 - ampliar a anonimização para e-mail, cartão, links e códigos;
 - implementar limites de tamanho e outras regras em `safety.py`;
 - integrar anonimização, IA, validação e aviso de segurança em um único fluxo;
