@@ -1,6 +1,6 @@
 """Testes das metricas de consumo permitidas."""
 
-import json
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
@@ -12,7 +12,7 @@ from storage import registrar_consumo_basico
 class ConsumoBasicoTests(unittest.TestCase):
     def test_carregar_consumo_ausente_retorna_metricas_zeradas(self) -> None:
         with tempfile.TemporaryDirectory() as diretorio:
-            caminho = Path(diretorio) / "consumo.json"
+            caminho = Path(diretorio) / "consumo.db"
 
             consumo = carregar_consumo(caminho)
 
@@ -32,23 +32,33 @@ class ConsumoBasicoTests(unittest.TestCase):
 
     def test_registra_consumo_sem_salvar_mensagem_integral(self) -> None:
         with tempfile.TemporaryDirectory() as diretorio:
-            caminho = Path(diretorio) / "consumo.json"
+            caminho = Path(diretorio) / "consumo.db"
 
             consumo = registrar_consumo_basico("abcde", caminho)
-            conteudo_salvo = caminho.read_text(encoding="utf-8")
-            dados_salvos = json.loads(conteudo_salvo)
+            conteudo_salvo = caminho.read_bytes()
+
+            with sqlite3.connect(caminho) as conexao:
+                registro = conexao.execute(
+                    """
+                    SELECT caracteres_entrada, tokens_aproximados, criado_em
+                    FROM consumo
+                    """
+                ).fetchone()
 
         self.assertEqual(consumo["total_chamadas"], 1)
         self.assertEqual(consumo["total_caracteres_entrada"], 5)
         self.assertEqual(consumo["total_tokens_aproximados"], 2)
         self.assertEqual(consumo["media_caracteres_por_chamada"], 5)
         self.assertEqual(consumo["ultima_entrada_caracteres"], 5)
-        self.assertEqual(dados_salvos, consumo)
-        self.assertNotIn("abcde", conteudo_salvo)
+        self.assertIsNotNone(registro)
+        self.assertEqual(registro[0], 5)
+        self.assertEqual(registro[1], 2)
+        self.assertTrue(registro[2])
+        self.assertNotIn(b"abcde", conteudo_salvo)
 
     def test_acumula_multiplas_chamadas(self) -> None:
         with tempfile.TemporaryDirectory() as diretorio:
-            caminho = Path(diretorio) / "consumo.json"
+            caminho = Path(diretorio) / "consumo.db"
 
             registrar_consumo_basico("abcde", caminho)
             consumo = registrar_consumo_basico("abcdefgh", caminho)

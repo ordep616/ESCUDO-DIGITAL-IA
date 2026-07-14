@@ -35,3 +35,8 @@ dist/
 
 # Metadados Git locais antigos
 .git.backup/
+
+# Banco de dados local
+*.db
+*.db-shm
+*.db-wal
