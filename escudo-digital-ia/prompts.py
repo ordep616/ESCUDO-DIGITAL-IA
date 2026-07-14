@@ -29,6 +29,14 @@ Classifique o risco usando apenas um destes valores:
 - moderado
 - alto_risco
 - informacao_insuficiente
+
+Regras de decisão:
+- Use informacao_insuficiente quando a mensagem for vaga, não identificar
+  remetente ou assunto e não apresentar pedido perigoso ou sinal concreto.
+- Expressões genéricas como "novidade importante" e "entre em contato",
+  sozinhas, não devem ser consideradas risco moderado.
+- Use moderado quando existir pelo menos um sinal concreto de risco, mesmo que
+  não seja suficiente para classificar como alto_risco.
 """
 
 
