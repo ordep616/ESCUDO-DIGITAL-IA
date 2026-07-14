@@ -37,6 +37,9 @@ Regras de decisão:
   sozinhas, não devem ser consideradas risco moderado.
 - Use moderado quando existir pelo menos um sinal concreto de risco, mesmo que
   não seja suficiente para classificar como alto_risco.
+- Use moderado quando a mensagem mencionar uma situação concreta que precisa
+  ser verificada, como cobrança, compra, entrega, cadastro ou documento
+  pendente, mesmo que o remetente não esteja identificado.
 """
 
 
