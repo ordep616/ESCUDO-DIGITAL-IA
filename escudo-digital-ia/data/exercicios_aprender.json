@@ -1,0 +1,134 @@
+[
+    {
+      "id": "exercicio_01",
+      "mensagem": "Olá, somos do seu banco. Sua conta será bloqueada em 10 minutos. Envie o código recebido por SMS para evitar o bloqueio.",
+      "classificacao_esperada": "alto_risco",
+      "sinais": [
+        "urgencia",
+        "ameaca",
+        "imitacao_de_pessoa_ou_instituicao",
+        "pedido_de_senha_ou_codigo"
+      ],
+      "explicacao": "A mensagem cria urgência, ameaça bloquear a conta e solicita um código de autenticação. Bancos não pedem esse código por mensagem.",
+      "recomendacoes": [
+        "nao_enviar_senhas_ou_codigos",
+        "nao_responder",
+        "usar_canal_oficial"
+      ]
+    },
+    {
+      "id": "exercicio_02",
+      "mensagem": "Oi, mãe. Troquei de número e estou com uma emergência. Faça um PIX agora para esta conta e não ligue porque não posso falar.",
+      "classificacao_esperada": "alto_risco",
+      "sinais": [
+        "urgencia",
+        "imitacao_de_pessoa_ou_instituicao",
+        "pedido_de_dinheiro",
+        "tentativa_de_impedir_verificacao"
+      ],
+      "explicacao": "A pessoa afirma ser um familiar, pede dinheiro com urgência e tenta impedir a confirmação por telefone. Esses são sinais comuns do golpe do falso familiar.",
+      "recomendacoes": [
+        "nao_responder",
+        "confirmar_com_a_pessoa_por_outro_canal",
+        "bloquear_e_denunciar"
+      ]
+    },
+    {
+      "id": "exercicio_03",
+      "mensagem": "Parabéns! Você ganhou um prêmio de dez mil reais. Para liberar o valor, pague hoje uma taxa de cadastro.",
+      "classificacao_esperada": "alto_risco",
+      "sinais": [
+        "recompensa",
+        "urgencia",
+        "pedido_de_dinheiro"
+      ],
+      "explicacao": "A promessa de um prêmio é usada para convencer o usuário a pagar uma taxa antecipada. Prêmios legítimos não exigem pagamento para serem liberados.",
+      "recomendacoes": [
+        "nao_responder",
+        "usar_canal_oficial",
+        "bloquear_e_denunciar"
+      ]
+    },
+    {
+      "id": "exercicio_04",
+      "mensagem": "Sua encomenda foi retida. Pague imediatamente a taxa de entrega pelo link https://entrega-invalida.test para evitar a devolução.",
+      "classificacao_esperada": "alto_risco",
+      "sinais": [
+        "urgencia",
+        "ameaca",
+        "pedido_de_dinheiro",
+        "link_desconhecido",
+        "imitacao_de_pessoa_ou_instituicao"
+      ],
+      "explicacao": "A mensagem ameaça devolver a encomenda, exige pagamento imediato e apresenta um link desconhecido. A situação deve ser verificada diretamente no site ou aplicativo oficial.",
+      "recomendacoes": [
+        "nao_clicar",
+        "nao_responder",
+        "usar_canal_oficial"
+      ]
+    },
+    {
+      "id": "exercicio_05",
+      "mensagem": "Identificamos uma compra de R$ 320,00 em processamento. Confira as movimentações diretamente no aplicativo oficial do banco.",
+      "classificacao_esperada": "moderado",
+      "sinais": [
+        "imitacao_de_pessoa_ou_instituicao"
+      ],
+      "explicacao": "A mensagem menciona uma compra concreta, mas não pede senha, código, pagamento ou acesso a um link. Mesmo assim, o remetente não foi confirmado.",
+      "recomendacoes": [
+        "nao_responder",
+        "usar_canal_oficial"
+      ]
+    },
+    {
+      "id": "exercicio_06",
+      "mensagem": "Seu pedido está aguardando confirmação do endereço. Consulte os detalhes diretamente no aplicativo oficial da loja.",
+      "classificacao_esperada": "moderado",
+      "sinais": [
+        "imitacao_de_pessoa_ou_instituicao"
+      ],
+      "explicacao": "Existe um evento concreto relacionado a uma entrega, mas a mensagem não apresenta link nem solicita dados. A confirmação deve ser feita no aplicativo oficial.",
+      "recomendacoes": [
+        "nao_responder",
+        "usar_canal_oficial"
+      ]
+    },
+    {
+      "id": "exercicio_07",
+      "mensagem": "Lembrete: a reunião de responsáveis acontecerá terça-feira, às 18 horas, na própria escola.",
+      "classificacao_esperada": "baixo_risco",
+      "sinais": [],
+      "explicacao": "A mensagem apenas informa data, horário e local. Ela não pede dinheiro, senha, código, dados pessoais nem acesso a links.",
+      "recomendacoes": [
+        "confirmar_com_a_pessoa_por_outro_canal"
+      ]
+    },
+    {
+      "id": "exercicio_08",
+      "mensagem": "Oi! Cheguei em casa. Obrigado pela ajuda de hoje.",
+      "classificacao_esperada": "baixo_risco",
+      "sinais": [],
+      "explicacao": "A mensagem é uma comunicação comum e não contém pedidos, ameaças, links, urgência ou solicitação de informações.",
+      "recomendacoes": []
+    },
+    {
+      "id": "exercicio_09",
+      "mensagem": "Olá, preciso falar com você quando puder.",
+      "classificacao_esperada": "informacao_insuficiente",
+      "sinais": [],
+      "explicacao": "A mensagem não apresenta contexto suficiente para determinar o risco. Também não contém pedido de dinheiro, código, senha, dados ou acesso a links.",
+      "recomendacoes": [
+        "confirmar_com_a_pessoa_por_outro_canal"
+      ]
+    },
+    {
+      "id": "exercicio_10",
+      "mensagem": "Sua solicitação foi recebida e será analisada.",
+      "classificacao_esperada": "informacao_insuficiente",
+      "sinais": [],
+      "explicacao": "Não há informação sobre qual solicitação foi recebida ou quem enviou a mensagem. Sem contexto adicional, não é possível classificar com segurança.",
+      "recomendacoes": [
+        "usar_canal_oficial"
+      ]
+    }
+  ]
