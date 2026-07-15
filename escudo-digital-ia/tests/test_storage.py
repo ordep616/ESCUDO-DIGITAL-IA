@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from storage import carregar_consumo, calcular_tamanho_entrada
+from storage import registrar_avaliacao
 from storage import registrar_consumo_basico
 
 
@@ -70,6 +71,50 @@ class ConsumoBasicoTests(unittest.TestCase):
         self.assertEqual(consumo["media_tokens_aproximados_por_chamada"], 2)
         self.assertEqual(consumo["ultima_entrada_caracteres"], 8)
         self.assertEqual(consumo["ultima_entrada_tokens_aproximados"], 2)
+
+    def test_registra_avaliacoes_permitidas(self) -> None:
+        with tempfile.TemporaryDirectory() as diretorio:
+            caminho = Path(diretorio) / "consumo.db"
+
+            registrar_avaliacao(" UTIL ", caminho)
+            registrar_avaliacao("nao_util", caminho)
+
+            with sqlite3.connect(caminho) as conexao:
+                valores = conexao.execute(
+                    "SELECT valor FROM avaliacoes ORDER BY id"
+                ).fetchall()
+
+        self.assertEqual(valores, [("util",), ("nao_util",)])
+
+    def test_rejeita_avaliacao_invalida(self) -> None:
+        with tempfile.TemporaryDirectory() as diretorio:
+            caminho = Path(diretorio) / "consumo.db"
+
+            with self.assertRaisesRegex(
+                ValueError,
+                "avaliação deve ser util ou nao_util",
+            ):
+                registrar_avaliacao("talvez", caminho)
+
+    def test_rejeita_avaliacao_que_nao_seja_string(self) -> None:
+        with tempfile.TemporaryDirectory() as diretorio:
+            caminho = Path(diretorio) / "consumo.db"
+
+            with self.assertRaisesRegex(TypeError, "valor deve ser uma string"):
+                registrar_avaliacao(None, caminho)  # type: ignore[arg-type]
+
+    def test_tabela_avaliacoes_nao_possui_coluna_de_mensagem(self) -> None:
+        with tempfile.TemporaryDirectory() as diretorio:
+            caminho = Path(diretorio) / "consumo.db"
+            registrar_avaliacao("util", caminho)
+
+            with sqlite3.connect(caminho) as conexao:
+                colunas = conexao.execute(
+                    "PRAGMA table_info(avaliacoes)"
+                ).fetchall()
+
+        nomes_colunas = [coluna[1] for coluna in colunas]
+        self.assertEqual(nomes_colunas, ["id", "valor", "criado_em"])
 
 
 if __name__ == "__main__":
