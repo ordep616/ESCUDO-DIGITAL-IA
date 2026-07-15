@@ -225,3 +225,49 @@ def salvar_resultados(
     )
 
     return dados_saida
+
+
+def executar_avaliacao_v1() -> dict[str, Any]:
+    """Executa os 30 casos usando o Prompt V1."""
+    from ai_service import AIServiceError
+    from main import RespostaIAInvalidaError, processar_mensagem
+
+    casos = carregar_casos()
+    resultados = []
+
+    for numero, caso in enumerate(casos, start=1):
+        print(f"Executando {caso['id']} ({numero}/{len(casos)})...")
+
+        try:
+            resposta = processar_mensagem(caso["mensagem"])
+            resultado = avaliar_caso(caso, resposta)
+        except (AIServiceError, RespostaIAInvalidaError, ValueError) as erro:
+            resultado = {
+                "id": caso["id"],
+                "esperado": caso["classificacao_esperada"],
+                "obtido": None,
+                "json_valido": False,
+                "resultado": "resposta_invalida",
+                "erros_validacao": [str(erro)],
+            }
+
+        resultados.append(resultado)
+
+        print(f"Esperado: {resultado['esperado']}")
+        print(f"Obtido: {resultado['obtido']}")
+        print(f"Resultado: {resultado['resultado']}\n")
+
+    dados = salvar_resultados(
+        resultados,
+        "v1",
+        RESULTADOS_V1_PATH,
+    )
+
+    print("Resumo:")
+    print(json.dumps(dados["metricas"], indent=2, ensure_ascii=False))
+
+    return dados
+
+
+if __name__ == "__main__":
+    executar_avaliacao_v1()

@@ -1,0 +1,256 @@
+{
+  "versao_prompt": "v1",
+  "gerado_em": "2026-07-15T18:09:44.540216+00:00",
+  "metricas": {
+    "total_casos": 30,
+    "acertos": 26,
+    "erros": 4,
+    "falsos_positivos": 1,
+    "falsos_negativos": 0,
+    "respostas_invalidas": 0,
+    "outros_erros": 3,
+    "taxa_acerto": 86.67
+  },
+  "resultados": [
+    {
+      "id": "caso_01",
+      "esperado": "alto_risco",
+      "obtido": "alto_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_02",
+      "esperado": "alto_risco",
+      "obtido": "alto_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_03",
+      "esperado": "alto_risco",
+      "obtido": "alto_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_04",
+      "esperado": "alto_risco",
+      "obtido": "alto_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_05",
+      "esperado": "alto_risco",
+      "obtido": "alto_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_06",
+      "esperado": "alto_risco",
+      "obtido": "alto_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_07",
+      "esperado": "alto_risco",
+      "obtido": "alto_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_08",
+      "esperado": "alto_risco",
+      "obtido": "alto_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_09",
+      "esperado": "alto_risco",
+      "obtido": "alto_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_10",
+      "esperado": "alto_risco",
+      "obtido": "alto_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_11",
+      "esperado": "moderado",
+      "obtido": "moderado",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_12",
+      "esperado": "moderado",
+      "obtido": "moderado",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_13",
+      "esperado": "moderado",
+      "obtido": "moderado",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_14",
+      "esperado": "moderado",
+      "obtido": "moderado",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_15",
+      "esperado": "moderado",
+      "obtido": "informacao_insuficiente",
+      "json_valido": true,
+      "resultado": "erro_classificacao",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_16",
+      "esperado": "moderado",
+      "obtido": "moderado",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_17",
+      "esperado": "baixo_risco",
+      "obtido": "baixo_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_18",
+      "esperado": "baixo_risco",
+      "obtido": "baixo_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_19",
+      "esperado": "baixo_risco",
+      "obtido": "baixo_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_20",
+      "esperado": "baixo_risco",
+      "obtido": "moderado",
+      "json_valido": true,
+      "resultado": "falso_positivo",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_21",
+      "esperado": "baixo_risco",
+      "obtido": "baixo_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_22",
+      "esperado": "baixo_risco",
+      "obtido": "baixo_risco",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_23",
+      "esperado": "baixo_risco",
+      "obtido": "informacao_insuficiente",
+      "json_valido": true,
+      "resultado": "erro_classificacao",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_24",
+      "esperado": "baixo_risco",
+      "obtido": "informacao_insuficiente",
+      "json_valido": true,
+      "resultado": "erro_classificacao",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_25",
+      "esperado": "informacao_insuficiente",
+      "obtido": "informacao_insuficiente",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_26",
+      "esperado": "informacao_insuficiente",
+      "obtido": "informacao_insuficiente",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_27",
+      "esperado": "informacao_insuficiente",
+      "obtido": "informacao_insuficiente",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_28",
+      "esperado": "informacao_insuficiente",
+      "obtido": "informacao_insuficiente",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_29",
+      "esperado": "informacao_insuficiente",
+      "obtido": "informacao_insuficiente",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    },
+    {
+      "id": "caso_30",
+      "esperado": "informacao_insuficiente",
+      "obtido": "informacao_insuficiente",
+      "json_valido": true,
+      "resultado": "acerto",
+      "erros_validacao": []
+    }
+  ]
+}
