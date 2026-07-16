@@ -12,6 +12,7 @@ def validar_mensagem_usuario(mensagem: str) -> str:
         raise TypeError("mensagem deve ser uma string")
 
     mensagem_limpa = mensagem.strip()
+
     if not mensagem_limpa:
         raise ValueError("Digite uma mensagem fictícia para analisar.")
 

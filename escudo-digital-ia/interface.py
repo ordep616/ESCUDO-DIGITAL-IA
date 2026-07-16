@@ -75,7 +75,11 @@ def formatar_resultado(resultado: Mapping[str, Any]) -> str:
     linhas = [
         "=== Resultado da análise ===",
         f"Classificação: {classificacao}",
-        f"Confiança: {confianca:.0f}%",
+        f"Certeza da análise: {confianca:.0f}%",
+        (
+            "Essa porcentagem indica a segurança da IA sobre a classificação, "
+            "não se a mensagem é confiável."
+        ),
         "",
     ]
     linhas.extend(_formatar_lista("Sinais identificados", resultado["sinais"]))

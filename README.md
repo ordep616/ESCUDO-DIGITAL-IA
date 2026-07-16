@@ -18,7 +18,7 @@ usuário possa tomar uma decisão mais segura.
 O formato esperado da análise contém:
 
 - classificação de risco;
-- nível de confiança;
+- certeza da análise, isto é, confiança da IA na classificação escolhida;
 - sinais encontrados;
 - recomendações de segurança;
 - explicação em linguagem simples;
