@@ -1,8 +1,9 @@
 # Relatório — Dia 3
 
-> Status: relatório parcial. As atividades de Pedro, a camada de segurança e o
-> modo “Aprender” já foram registrados. A integração da avaliação, o menu
-> principal e a interface final ainda aguardam o trabalho do colaborador.
+> Status: implementação e validação automática concluídas. As atividades de
+> Pedro, a camada de segurança, o modo “Aprender”, o menu principal, a avaliação
+> e a interface web já foram integrados. A suíte completa possui 90 testes
+> aprovados. Resta apenas a verificação manual da interface.
 
 ## Objetivo do dia
 
@@ -173,6 +174,35 @@ exercícios do arquivo JSON. Em cada exercício, o fluxo:
 O modo educativo utiliza somente o conteúdo local do JSON e não chama a API.
 Essa implementação está registrada no commit `94e2d44`.
 
+### Menu principal
+
+O `main.py` passou a oferecer três opções no terminal:
+
+1. analisar uma mensagem;
+2. iniciar o modo “Aprender”;
+3. encerrar o programa.
+
+Uma opção inválida é rejeitada sem executar a análise nem o modo educativo.
+
+### Interface web e avaliação
+
+Foi criada uma página web simples com Streamlit em `web.py`. A interface possui
+duas abas:
+
+- **Analisar mensagem**, que reutiliza o fluxo seguro de `main.py`, apresenta a
+  classificação, a confiança, os sinais, a explicação e as recomendações;
+- **Modo Aprender**, que apresenta os dez exercícios locais, compara cada
+  resposta e calcula o aproveitamento final.
+
+Depois de uma análise, o usuário pode escolher `util` ou `nao_util`. A função
+`registrar_feedback_analise()` encaminha somente esse valor para
+`registrar_avaliacao()`. A mensagem analisada não é recebida nem armazenada
+pela função de avaliação.
+
+O estado da interface impede que a mesma resposta do modo educativo seja
+contabilizada mais de uma vez. A linguagem apresentada foi revisada para
+explicar classificações e recomendações sem exigir conhecimento técnico.
+
 ## Testes executados
 
 Após a ampliação da privacidade, criação da avaliação e integração da camada de
@@ -205,6 +235,31 @@ Sucessos: 8
 Falhas: 0
 ```
 
+### Testes do menu e da interface web
+
+Foram adicionados testes para as opções do menu principal e seis testes das
+funções auxiliares da interface web. Eles verificam:
+
+- rótulos de classificação em linguagem humana;
+- formatação da confiança;
+- registro do feedback sem receber a mensagem;
+- contabilização de uma única resposta por exercício;
+- ausência de incremento quando a resposta está errada;
+- avanço seguro para o exercício seguinte.
+
+Para executar esses testes, a `.venv` foi sincronizada com `poetry install`,
+pois o Streamlit havia sido acrescentado ao `pyproject.toml` e ao
+`poetry.lock` depois da criação do ambiente virtual.
+
+Depois da instalação do Streamlit 1.59.2, a suíte completa foi executada sem
+chamadas externas à API:
+
+```text
+Testes automatizados: 90
+Sucessos: 90
+Falhas: 0
+```
+
 ## Erros encontrados e aprendizados
 
 Durante a implementação foram encontrados alguns erros de edição e execução:
@@ -219,6 +274,12 @@ Durante a implementação foram encontrados alguns erros de edição e execuçã
    do módulo.
 4. Depois da movimentação, uma indentação incorreta causou `IndentationError`.
    A declaração foi alinhada como função de nível principal.
+5. A primeira integração web alterou acidentalmente o `caso_02` e removeu a
+   tabela e a função de avaliação do `storage.py`. As regressões foram
+   identificadas pela suíte automática e corrigidas no commit `db84c0f`.
+6. Depois do `pull`, o ambiente virtual ainda não possuía o Streamlit instalado.
+   O código e o lock já declaram a dependência; falta executar `poetry install`
+   antes da validação final.
 
 Depois de cada correção, os testes específicos e a suíte completa foram
 executados novamente.
@@ -231,7 +292,9 @@ executados novamente.
 - avaliações não possuem ligação com mensagem, nome ou dado pessoal;
 - o banco local continua protegido pelo `.gitignore`;
 - os testes usam bancos temporários;
-- o modo “Aprender” funciona localmente sem chamar a API.
+- o modo “Aprender” funciona localmente sem chamar a API;
+- a interface web reutiliza a validação e a anonimização do fluxo principal;
+- o feedback salva somente `util`, `nao_util` e o horário.
 
 ## Como o Codex foi utilizado
 
@@ -250,7 +313,9 @@ O Codex foi utilizado para:
 - `757ed43` — amplia a anonimização de dados sensíveis;
 - `d2129e7` — adiciona o armazenamento de avaliações;
 - `ff7dfb6` — adiciona os exercícios do modo “Aprender”;
-- `94e2d44` — implementa o fluxo do modo “Aprender”.
+- `94e2d44` — implementa o fluxo do modo “Aprender”;
+- `91878a5` — cria a primeira versão da interface web;
+- `db84c0f` — corrige regressões e integra menu, avaliação e testes web.
 
 ## O que Pedro deve saber explicar da parte do colaborador
 
@@ -260,7 +325,9 @@ O Codex foi utilizado para:
 - como o modo “Aprender” carrega e valida o JSON;
 - como a escolha do usuário é comparada com a resposta esperada;
 - por que a explicação deve aparecer tanto em acertos quanto em erros;
-- como a pontuação é calculada sem chamar a API.
+- como a pontuação é calculada sem chamar a API;
+- como o menu encaminha o usuário para análise ou modo educativo;
+- como a interface web registra feedback sem salvar a mensagem.
 
 ## O que o colaborador deve saber explicar da parte de Pedro
 
@@ -273,10 +340,5 @@ O Codex foi utilizado para:
 
 ## Pendências para concluir o Dia 3
 
-- [ ] conectar o modo “Aprender” ao menu principal;
-- [ ] conectar `registrar_avaliacao()` à interface;
-- [ ] criar a página web simples ou integração com Telegram;
-- [ ] revisar toda a linguagem apresentada ao usuário;
-- [ ] criar testes do menu e das integrações pendentes;
-- [ ] executar a suíte completa após a integração;
-- [ ] completar este relatório com os resultados finais do colaborador.
+- [ ] testar manualmente a análise, o modo “Aprender” e o feedback na interface;
+- [ ] alterar o status do relatório para concluído após a validação final.
