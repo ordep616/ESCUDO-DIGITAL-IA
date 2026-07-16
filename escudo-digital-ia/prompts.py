@@ -109,16 +109,21 @@ SYSTEM_PROMPT_V1 = montar_system_prompt()
 def regras_de_decisao_v2() -> str:
     return """
 Regras de decisão adicionais do Prompt V2:
-- Classifique como baixo_risco mensagens informativas que orientam o usuário a
-  consultar aplicativo, portal, site ou canal oficial, desde que não contenham
-  link desconhecido, urgência, ameaça, pedido de senha, código, dinheiro,
-  dados pessoais ou tentativa de impedir verificação.
-- Confirmações simples de entrega, inscrição, extrato, agendamento ou
-  disponibilidade de informação em canal oficial tendem a baixo_risco quando
-  não solicitam ação perigosa.
+- Orientar a consulta por aplicativo, portal, site ou canal oficial é uma
+  recomendação segura, mas não reduz automaticamente a classificação para
+  baixo_risco.
+- Classifique como moderado mensagens com situação concreta que precisa ser
+  verificada, mesmo quando recomendam canal oficial. Exemplos: tentativa de
+  entrega com endereço incompleto, compra diferente do padrão ou documento
+  aguardando assinatura.
+- Confirmações simples de entrega concluída, inscrição recebida, extrato
+  disponível, agendamento ou disponibilidade de informação em canal oficial
+  tendem a baixo_risco quando não solicitam ação perigosa e não apresentam
+  uma pendência que precise ser verificada.
 - Classifique como informacao_insuficiente mensagens genéricas ou vagas que
   não identifiquem remetente, assunto ou contexto e também não apresentem sinal
-  concreto de risco.
+  concreto de risco. Exemplo: "Seu pedido está aguardando confirmação." sem
+  identificar remetente, pedido ou instrução.
 - Classifique como moderado oportunidades de trabalho, vaga, renda extra ou
   seleção recebidas sem solicitação ou sem identificação suficiente da empresa,
   mesmo quando ainda não houver pedido de dinheiro, dados pessoais ou link.
