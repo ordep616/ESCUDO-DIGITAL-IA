@@ -1,8 +1,8 @@
 # Relatório — Dia 3
 
-> Status: relatório parcial. As atividades concluídas por Pedro e a camada de
-> segurança já foram registradas. O modo “Aprender”, a integração da avaliação
-> à interface e a interface final ainda aguardam o trabalho do colaborador.
+> Status: relatório parcial. As atividades de Pedro, a camada de segurança e o
+> modo “Aprender” já foram registrados. A integração da avaliação, o menu
+> principal e a interface final ainda aguardam o trabalho do colaborador.
 
 ## Objetivo do dia
 
@@ -118,11 +118,10 @@ A função `registrar_avaliacao()`:
 Os testes também conferem que a tabela `avaliacoes` possui somente as colunas
 `id`, `valor` e `criado_em`.
 
-## Material disponível para o modo “Aprender”
+## Material do modo “Aprender”
 
-O projeto possui `data/exercicios_aprender.json` como material inicial para a
-tarefa do colaborador. O arquivo contém dez exercícios fictícios, e cada
-exercício possui:
+O projeto possui `data/exercicios_aprender.json` como base local do modo
+educativo. O arquivo contém dez exercícios fictícios, e cada exercício possui:
 
 - identificador;
 - mensagem fictícia;
@@ -159,6 +158,21 @@ O colaborador implementou `safety.py` e seus testes. A camada de segurança:
 
 Essa atividade está registrada no commit `2a0b4b6`.
 
+### Modo “Aprender”
+
+O colaborador implementou `aprender.py`, que carrega e valida exatamente dez
+exercícios do arquivo JSON. Em cada exercício, o fluxo:
+
+1. apresenta uma mensagem fictícia;
+2. solicita uma das quatro classificações permitidas;
+3. compara a resposta do usuário com a classificação esperada;
+4. informa se houve acerto ou erro;
+5. mostra os sinais, a explicação e as recomendações;
+6. calcula a quantidade de acertos e o aproveitamento final.
+
+O modo educativo utiliza somente o conteúdo local do JSON e não chama a API.
+Essa implementação está registrada no commit `94e2d44`.
+
 ## Testes executados
 
 Após a ampliação da privacidade, criação da avaliação e integração da camada de
@@ -171,6 +185,25 @@ Falhas: 0
 ```
 
 Os testes não realizam chamadas externas e não consomem créditos da API.
+
+### Testes do modo “Aprender”
+
+O arquivo `tests/test_aprender.py` contém oito testes automáticos. Eles
+verificam:
+
+- o carregamento da base oficial com dez exercícios;
+- a validação dos campos obrigatórios;
+- a rejeição de classificações esperadas inválidas;
+- a rejeição de arquivos que não sejam listas;
+- a rejeição de quantidades diferentes de dez exercícios;
+- a apresentação do resultado final;
+- a ausência de chamadas à API durante o fluxo educativo.
+
+```text
+Testes do modo Aprender: 8
+Sucessos: 8
+Falhas: 0
+```
 
 ## Erros encontrados e aprendizados
 
@@ -198,7 +231,7 @@ executados novamente.
 - avaliações não possuem ligação com mensagem, nome ou dado pessoal;
 - o banco local continua protegido pelo `.gitignore`;
 - os testes usam bancos temporários;
-- o modo “Aprender” deverá funcionar sem chamar a API.
+- o modo “Aprender” funciona localmente sem chamar a API.
 
 ## Como o Codex foi utilizado
 
@@ -216,17 +249,18 @@ O Codex foi utilizado para:
 - `2a0b4b6` — implementa regras locais de segurança;
 - `757ed43` — amplia a anonimização de dados sensíveis;
 - `d2129e7` — adiciona o armazenamento de avaliações;
-- `ff7dfb6` — adiciona os exercícios do modo “Aprender”.
+- `ff7dfb6` — adiciona os exercícios do modo “Aprender”;
+- `94e2d44` — implementa o fluxo do modo “Aprender”.
 
 ## O que Pedro deve saber explicar da parte do colaborador
 
 - o problema resolvido por `safety.py`;
 - por que a validação ocorre antes da chamada à IA;
 - como mensagens vazias e grandes são rejeitadas;
-- como o modo “Aprender” carregará o JSON;
-- como a escolha do usuário será comparada com a resposta esperada;
+- como o modo “Aprender” carrega e valida o JSON;
+- como a escolha do usuário é comparada com a resposta esperada;
 - por que a explicação deve aparecer tanto em acertos quanto em erros;
-- como a pontuação será calculada sem chamar a API.
+- como a pontuação é calculada sem chamar a API.
 
 ## O que o colaborador deve saber explicar da parte de Pedro
 
@@ -239,15 +273,10 @@ O Codex foi utilizado para:
 
 ## Pendências para concluir o Dia 3
 
-- [ ] criar o código do modo “Aprender”;
-- [ ] carregar e validar os dez exercícios;
-- [ ] receber e conferir a classificação escolhida pelo usuário;
-- [ ] mostrar sinais, explicação e recomendações após cada exercício;
-- [ ] calcular acertos, erros e aproveitamento;
-- [ ] garantir que o modo educativo não chame a API;
+- [ ] conectar o modo “Aprender” ao menu principal;
 - [ ] conectar `registrar_avaliacao()` à interface;
 - [ ] criar a página web simples ou integração com Telegram;
 - [ ] revisar toda a linguagem apresentada ao usuário;
-- [ ] criar testes das funcionalidades pendentes;
+- [ ] criar testes do menu e das integrações pendentes;
 - [ ] executar a suíte completa após a integração;
 - [ ] completar este relatório com os resultados finais do colaborador.
