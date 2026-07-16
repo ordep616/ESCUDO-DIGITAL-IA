@@ -32,6 +32,8 @@ OPCOES_CLASSIFICACAO = [
     "informacao_insuficiente",
 ]
 
+MODOS_WEB = {"menu", "analise", "aprender", "sair"}
+
 
 def _estado_get(
     estado: MutableMapping[str, Any],
@@ -70,6 +72,11 @@ def preparar_estado_analise(estado: MutableMapping[str, Any]) -> None:
         estado["resultado_analise"] = None
     if "feedback_registrado" not in estado:
         estado["feedback_registrado"] = False
+
+
+def preparar_estado_menu(estado: MutableMapping[str, Any]) -> None:
+    if "modo_web" not in estado:
+        estado["modo_web"] = "menu"
 
 
 def preparar_estado_aprender(estado: MutableMapping[str, Any]) -> None:
@@ -122,6 +129,13 @@ def registrar_feedback_analise(
 ) -> str:
     registrador(valor)
     return "Obrigado pela avaliação. Ela foi registrada sem salvar a mensagem."
+
+
+def selecionar_modo(estado: MutableMapping[str, Any], modo: str) -> None:
+    if modo not in MODOS_WEB:
+        raise ValueError("modo da web inválido")
+
+    estado["modo_web"] = modo
 
 
 def escrever_lista(titulo: str, itens: list[str], texto_vazio: str) -> None:
@@ -305,6 +319,36 @@ def renderizar_aba_aprender() -> None:
             st.rerun()
 
 
+def renderizar_menu_principal() -> None:
+    st.subheader("Menu principal")
+
+    coluna_analise, coluna_aprender, coluna_sair = st.columns(3)
+
+    if coluna_analise.button("Analisar mensagem", use_container_width=True):
+        selecionar_modo(st.session_state, "analise")
+        st.rerun()
+
+    if coluna_aprender.button("Iniciar modo Aprender", use_container_width=True):
+        selecionar_modo(st.session_state, "aprender")
+        st.rerun()
+
+    if coluna_sair.button("Sair", use_container_width=True):
+        selecionar_modo(st.session_state, "sair")
+        st.rerun()
+
+
+def renderizar_botao_voltar_menu() -> None:
+    if st.button("Voltar ao menu"):
+        selecionar_modo(st.session_state, "menu")
+        st.rerun()
+
+
+def renderizar_tela_sair() -> None:
+    st.subheader("Sair")
+    st.info("Aplicação encerrada. Você pode fechar esta aba do navegador.")
+    renderizar_botao_voltar_menu()
+
+
 def executar_web() -> None:
     st.set_page_config(
         page_title="Escudo Digital IA",
@@ -315,13 +359,18 @@ def executar_web() -> None:
     st.title("Escudo Digital IA")
     st.write("Assistente Digital para reconhecer possíveis golpes digitais.")
 
-    aba_analise, aba_aprender = st.tabs(["Analisar mensagem", "Modo Aprender"])
+    preparar_estado_menu(st.session_state)
 
-    with aba_analise:
+    if st.session_state["modo_web"] == "menu":
+        renderizar_menu_principal()
+    elif st.session_state["modo_web"] == "analise":
+        renderizar_botao_voltar_menu()
         renderizar_aba_analise()
-
-    with aba_aprender:
+    elif st.session_state["modo_web"] == "aprender":
+        renderizar_botao_voltar_menu()
         renderizar_aba_aprender()
+    else:
+        renderizar_tela_sair()
 
 
 if __name__ == "__main__":
