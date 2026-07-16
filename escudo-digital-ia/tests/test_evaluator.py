@@ -175,8 +175,13 @@ class EvaluatorTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "casos não encontrados"):
             filtrar_casos_por_ids(casos, ["caso_99"])
 
+    @patch("evaluator.registrar_consumo_basico")
     @patch("evaluator.analisar_mensagem")
-    def test_executa_avaliacao_v2_sem_chamada_real_a_api(self, analisar) -> None:
+    def test_executa_avaliacao_v2_sem_chamada_real_a_api(
+        self,
+        analisar,
+        registrar_consumo,
+    ) -> None:
         resposta_textual = dict(RESPOSTA_VALIDA)
         resposta_textual["classificacao"] = "alto_risco"
         analisar.return_value = json.dumps(resposta_textual)
@@ -190,7 +195,10 @@ class EvaluatorTests(unittest.TestCase):
                     [
                         {
                             "id": "caso_15",
-                            "mensagem": "Você foi selecionado para uma vaga.",
+                            "mensagem": (
+                                "Você foi selecionado para uma vaga. "
+                                "Contato: teste@example.com"
+                            ),
                             "classificacao_esperada": "alto_risco",
                         }
                     ],
@@ -210,6 +218,12 @@ class EvaluatorTests(unittest.TestCase):
         self.assertEqual(dados["versao_prompt"], "v2")
         self.assertEqual(dados["metricas"]["total_casos"], 1)
         self.assertEqual(analisar.call_args.args[1], SYSTEM_PROMPT_V2)
+        mensagem_anonimizada = (
+            "Você foi selecionado para uma vaga. "
+            "Contato: [E-MAIL OCULTADO]"
+        )
+        self.assertEqual(analisar.call_args.args[0], mensagem_anonimizada)
+        registrar_consumo.assert_called_once_with(mensagem_anonimizada)
         self.assertTrue(resultado_foi_salvo)
 
     def test_rejeita_versao_de_prompt_invalida(self) -> None:

@@ -13,6 +13,7 @@ from ai_service import AIServiceError, analisar_mensagem
 from privacy import anonimizar_cpf_telefone
 from prompts import SYSTEM_PROMPT_V1, SYSTEM_PROMPT_V2
 from safety import validar_mensagem_usuario
+from storage import registrar_consumo_basico
 from validator import CLASSIFICACOES_PERMITIDAS, validar_resposta_ia
 
 
@@ -198,6 +199,7 @@ def analisar_caso_com_prompt(
     mensagem_validada = validar_mensagem_usuario(mensagem)
     mensagem_segura = anonimizar_cpf_telefone(mensagem_validada)
     resposta_textual = analisar_mensagem(mensagem_segura, prompt, cliente)
+    registrar_consumo_basico(mensagem_segura)
 
     try:
         resposta = json.loads(resposta_textual)
