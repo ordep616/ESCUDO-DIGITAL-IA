@@ -3,11 +3,35 @@
 import unittest
 
 from web import avancar_exercicio, formatar_confianca
+from web import preparar_estado_menu, selecionar_modo
 from web import registrar_feedback_analise, registrar_resposta_aprender
 from web import rotulo_classificacao
 
 
 class WebTests(unittest.TestCase):
+    def test_estado_da_web_inicia_no_menu_principal(self) -> None:
+        estado = {}
+
+        preparar_estado_menu(estado)
+
+        self.assertEqual(estado["modo_web"], "menu")
+
+    def test_seleciona_opcoes_do_menu_principal(self) -> None:
+        estado = {"modo_web": "menu"}
+
+        selecionar_modo(estado, "analise")
+        self.assertEqual(estado["modo_web"], "analise")
+
+        selecionar_modo(estado, "aprender")
+        self.assertEqual(estado["modo_web"], "aprender")
+
+        selecionar_modo(estado, "sair")
+        self.assertEqual(estado["modo_web"], "sair")
+
+    def test_rejeita_modo_web_invalido(self) -> None:
+        with self.assertRaisesRegex(ValueError, "modo da web inválido"):
+            selecionar_modo({}, "configuracao")
+
     def test_formata_classificacao_para_leitura_humana(self) -> None:
         self.assertEqual(rotulo_classificacao("baixo_risco"), "Baixo risco")
         self.assertEqual(
