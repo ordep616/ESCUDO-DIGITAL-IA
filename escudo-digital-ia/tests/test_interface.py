@@ -23,7 +23,11 @@ class InterfaceTests(unittest.TestCase):
         texto = formatar_resultado(self.resultado)
 
         self.assertIn("Classificação: ALTO RISCO", texto)
-        self.assertIn("Confiança: 92%", texto)
+        self.assertIn("Certeza da análise: 92%", texto)
+        self.assertIn(
+            "não se a mensagem é confiável",
+            texto,
+        )
         self.assertIn("- Urgência", texto)
         self.assertIn("- Não envie senhas ou códigos", texto)
         self.assertIn("A mensagem pressiona o usuário.", texto)

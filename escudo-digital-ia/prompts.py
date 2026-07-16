@@ -84,6 +84,9 @@ Responda somente em JSON válido, sem markdown, no formato:
   "explicacao_simples": "",
   "informacao_insuficiente": false
 }
+
+O campo "confianca" deve indicar o quanto você está seguro da classificação
+escolhida. Ele não representa o quanto a mensagem é confiável ou segura.
 """
 
 

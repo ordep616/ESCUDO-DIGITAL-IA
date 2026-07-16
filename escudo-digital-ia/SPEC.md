@@ -38,7 +38,7 @@ O usuário recebe uma promessa de prêmio condicionada ao pagamento antecipado d
 Permitir que uma pessoa envie uma mensagem fictícia ou anonimizada e receba:
 
 - classificação de risco;
-- nível de confiança;
+- certeza da análise, isto é, confiança da IA na classificação escolhida;
 - sinais encontrados;
 - explicação em linguagem simples;
 - recomendações seguras e verificáveis;
@@ -177,7 +177,7 @@ A API deverá retornar uma estrutura JSON semelhante a:
 
 - Todos os campos são obrigatórios.
 - `classificacao` deve conter um dos quatro valores permitidos.
-- `confianca` deve ser um número entre 0 e 1.
+- `confianca` deve ser um número entre 0 e 1 e representar a certeza da IA sobre a classificação, não o quanto a mensagem é confiável ou segura.
 - `sinais` e `recomendacoes` devem ser listas.
 - `explicacao_simples` deve ser um texto não vazio.
 - `informacao_insuficiente` deve ser um valor booleano.
