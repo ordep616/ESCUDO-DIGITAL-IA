@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Escudo Digital IA</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <main class="container">
+      <h1>Escudo Digital IA</h1>
+      <p class="lead">
+        Assistente educativo para reconhecer sinais de possíveis golpes digitais.
+      </p>
+
+      <form method="post" action="/analisar" class="panel">
+        <label for="mensagem">Mensagem fictícia ou anonimizada</label>
+        <textarea id="mensagem" name="mensagem" rows="8" required></textarea>
+        <button type="submit">Analisar mensagem</button>
+      </form>
+
+      <a class="secondary-link" href="/aprender">Iniciar modo Aprender</a>
+    </main>
+  </body>
+</html>

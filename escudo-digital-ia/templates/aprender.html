@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Modo Aprender - Escudo Digital IA</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <main class="container">
+      <h1>Modo Aprender</h1>
+
+      <section class="panel">
+        <p class="lead">{{ exercicio.mensagem }}</p>
+
+        <form method="post" action="/aprender/responder">
+          <label for="classificacao">Classificação</label>
+          <select id="classificacao" name="classificacao" required>
+            <option value="baixo_risco">Baixo risco</option>
+            <option value="moderado">Risco moderado</option>
+            <option value="alto_risco">Alto risco</option>
+            <option value="informacao_insuficiente">Informação insuficiente</option>
+          </select>
+          <button type="submit">Responder</button>
+        </form>
+      </section>
+
+      <a class="secondary-link" href="/">Voltar para análise</a>
+    </main>
+  </body>
+</html>

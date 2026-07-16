@@ -10,8 +10,7 @@
   {
     "id": "caso_02",
     "categoria": "alto_risco",
-    "mensagem": "
-    ",
+    "mensagem": "Detectamos uma invasão. Envie imediatamente o código recebido por SMS para proteger sua conta.",
     "classificacao_esperada": "alto_risco",
     "sinais_esperados": ["urgencia", "ameaca", "pedido_de_codigo"],
     "justificativa": "Instituições legítimas não solicitam códigos de autenticação por mensagem."

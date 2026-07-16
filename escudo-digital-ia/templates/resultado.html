@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resultado - Escudo Digital IA</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <main class="container">
+      <h1>Resultado da análise</h1>
+
+      <section class="panel">
+        <p><strong>Classificação:</strong> {{ resultado.classificacao }}</p>
+        <p><strong>Certeza da análise:</strong> {{ resultado.confianca }}</p>
+        <p>{{ resultado.explicacao_simples }}</p>
+
+        <h2>Sinais identificados</h2>
+        <ul>
+          {% for sinal in resultado.sinais %}
+            <li>{{ sinal }}</li>
+          {% else %}
+            <li>Nenhum sinal identificado.</li>
+          {% endfor %}
+        </ul>
+
+        <h2>Recomendações</h2>
+        <ul>
+          {% for recomendacao in resultado.recomendacoes %}
+            <li>{{ recomendacao }}</li>
+          {% else %}
+            <li>Nenhuma recomendação específica.</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <form method="post" action="/avaliar" class="feedback">
+        <button type="submit" name="valor" value="util">Útil</button>
+        <button type="submit" name="valor" value="nao_util">Não útil</button>
+      </form>
+
+      <a class="secondary-link" href="/">Analisar outra mensagem</a>
+    </main>
+  </body>
+</html>

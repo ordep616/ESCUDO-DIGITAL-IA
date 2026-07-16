@@ -6,6 +6,7 @@ import json
 from collections.abc import Callable
 from typing import Any
 
+from aprender import executar_modo_aprender
 from ai_service import AIServiceError, analisar_mensagem
 from interface import formatar_resultado, texto_introducao
 from privacy import anonimizar_cpf_telefone
@@ -51,10 +52,28 @@ def executar_cli(
     entrada: Callable[[str], str] = input,
     saida: Callable[[str], None] = print,
 ) -> int:
-    """Executa uma análise interativa e retorna um código de saída."""
+    """Executa o menu principal e retorna um código de saída."""
     saida(texto_introducao())
 
     try:
+        saida("\nMenu principal")
+        saida("1 - Analisar mensagem")
+        saida("2 - Iniciar modo Aprender")
+        saida("3 - Sair")
+
+        opcao = entrada("\nEscolha uma opção: ").strip()
+
+        if opcao == "2":
+            return executar_modo_aprender(entrada, saida)
+
+        if opcao == "3":
+            saida("\nEncerrando.")
+            return 0
+
+        if opcao != "1":
+            saida("\nOpção inválida.")
+            return 1
+
         mensagem = entrada("\nMensagem: ")
         resultado = processar_mensagem(mensagem)
     except (EOFError, KeyboardInterrupt):

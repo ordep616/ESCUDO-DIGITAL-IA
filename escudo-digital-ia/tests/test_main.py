@@ -77,9 +77,10 @@ class MainTests(unittest.TestCase):
     @patch("main.processar_mensagem", return_value=RESPOSTA_VALIDA)
     def test_cli_exibe_resultado_amigavel(self, _processar) -> None:
         saidas = []
+        entradas = iter(["1", "mensagem fictícia"])
 
         codigo = executar_cli(
-            entrada=lambda _prompt: "mensagem fictícia",
+            entrada=lambda _prompt: next(entradas),
             saida=saidas.append,
         )
 
@@ -92,14 +93,65 @@ class MainTests(unittest.TestCase):
     )
     def test_cli_apresenta_erro_controlado(self, _processar) -> None:
         saidas = []
+        entradas = iter(["1", "mensagem fictícia"])
 
         codigo = executar_cli(
-            entrada=lambda _prompt: "mensagem fictícia",
+            entrada=lambda _prompt: next(entradas),
             saida=saidas.append,
         )
 
         self.assertEqual(codigo, 1)
         self.assertIn("temporariamente indisponível", "\n".join(saidas))
+
+    @patch("main.executar_modo_aprender", return_value=0)
+    @patch("main.processar_mensagem")
+    def test_cli_chama_modo_aprender(
+        self,
+        processar,
+        executar_aprender,
+    ) -> None:
+        saidas = []
+
+        codigo = executar_cli(
+            entrada=lambda _prompt: "2",
+            saida=saidas.append,
+        )
+
+        self.assertEqual(codigo, 0)
+        executar_aprender.assert_called_once()
+        processar.assert_not_called()
+
+    @patch("main.executar_modo_aprender")
+    @patch("main.processar_mensagem")
+    def test_cli_sai_sem_executar_fluxos(
+        self,
+        processar,
+        executar_aprender,
+    ) -> None:
+        saidas = []
+
+        codigo = executar_cli(
+            entrada=lambda _prompt: "3",
+            saida=saidas.append,
+        )
+
+        self.assertEqual(codigo, 0)
+        self.assertIn("Encerrando.", "\n".join(saidas))
+        executar_aprender.assert_not_called()
+        processar.assert_not_called()
+
+    @patch("main.processar_mensagem")
+    def test_cli_rejeita_opcao_invalida(self, processar) -> None:
+        saidas = []
+
+        codigo = executar_cli(
+            entrada=lambda _prompt: "9",
+            saida=saidas.append,
+        )
+
+        self.assertEqual(codigo, 1)
+        self.assertIn("Opção inválida.", "\n".join(saidas))
+        processar.assert_not_called()
 
 
 if __name__ == "__main__":
