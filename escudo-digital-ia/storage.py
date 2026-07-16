@@ -30,6 +30,16 @@ def _criar_banco(caminho: str | Path = BANCO_PATH) -> None:
             )
             """
         )
+        conexao.execute(
+            """
+            CREATE TABLE IF NOT EXISTS avaliacoes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                valor TEXT NOT NULL
+                    CHECK (valor IN ('util', 'nao_util')),
+                criado_em TEXT NOT NULL
+            )
+            """
+        )
 
 def _inserir_consumo(
     caracteres_entrada: int,
@@ -174,3 +184,32 @@ def registrar_consumo_basico(
     )
 
     return _resumir_consumo(caminho)
+
+
+def registrar_avaliacao(
+    valor: str,
+    caminho: str | Path = BANCO_PATH,
+) -> None:
+    """Registra somente se a análise foi útil, sem salvar a mensagem."""
+    if not isinstance(valor, str):
+        raise TypeError("valor deve ser uma string")
+
+    valor_normalizado = valor.strip().lower()
+
+    if valor_normalizado not in {"util", "nao_util"}:
+        raise ValueError("avaliação deve ser util ou nao_util")
+
+    caminho = Path(caminho)
+    _criar_banco(caminho)
+
+    with sqlite3.connect(caminho) as conexao:
+        conexao.execute(
+            """
+            INSERT INTO avaliacoes (valor, criado_em)
+            VALUES (?, ?)
+            """,
+            (
+                valor_normalizado,
+                datetime.now(timezone.utc).isoformat(),
+            ),
+        )
