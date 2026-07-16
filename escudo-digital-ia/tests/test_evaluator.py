@@ -4,9 +4,13 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from evaluator import avaliar_caso, calcular_metricas, carregar_casos
-from evaluator import classificar_resultado, salvar_resultados
+from evaluator import caminho_resultados_prompt, classificar_resultado
+from evaluator import executar_avaliacao, filtrar_casos_por_ids
+from evaluator import salvar_resultados, selecionar_prompt
+from prompts import SYSTEM_PROMPT_V1, SYSTEM_PROMPT_V2
 
 
 RESPOSTA_VALIDA = {
@@ -132,6 +136,81 @@ class EvaluatorTests(unittest.TestCase):
         self.assertNotIn("mensagem", dados["resultados"][0])
         self.assertEqual(dados["versao_prompt"], "v1")
         self.assertEqual(dados["metricas"]["acertos"], 1)
+
+    def test_seleciona_prompt_e_caminho_de_resultado_por_versao(self) -> None:
+        self.assertEqual(selecionar_prompt("v1"), SYSTEM_PROMPT_V1)
+        self.assertEqual(selecionar_prompt("v2"), SYSTEM_PROMPT_V2)
+        self.assertEqual(
+            caminho_resultados_prompt("v2").name,
+            "resultados_prompt_v2.json",
+        )
+
+    def test_filtra_casos_por_ids(self) -> None:
+        casos = [
+            {
+                "id": "caso_01",
+                "mensagem": "a",
+                "classificacao_esperada": "baixo_risco",
+            },
+            {
+                "id": "caso_02",
+                "mensagem": "b",
+                "classificacao_esperada": "moderado",
+            },
+        ]
+
+        filtrados = filtrar_casos_por_ids(casos, ["caso_02"])
+
+        self.assertEqual([caso["id"] for caso in filtrados], ["caso_02"])
+
+    def test_rejeita_id_de_caso_inexistente(self) -> None:
+        casos = [
+            {
+                "id": "caso_01",
+                "mensagem": "a",
+                "classificacao_esperada": "baixo_risco",
+            },
+        ]
+
+        with self.assertRaisesRegex(ValueError, "casos não encontrados"):
+            filtrar_casos_por_ids(casos, ["caso_99"])
+
+    @patch("evaluator.analisar_mensagem")
+    def test_executa_avaliacao_v2_sem_chamada_real_a_api(self, analisar) -> None:
+        resposta_textual = dict(RESPOSTA_VALIDA)
+        resposta_textual["classificacao"] = "alto_risco"
+        analisar.return_value = json.dumps(resposta_textual)
+
+        with tempfile.TemporaryDirectory() as diretorio:
+            diretorio_path = Path(diretorio)
+            casos_path = diretorio_path / "casos.json"
+            resultados_path = diretorio_path / "resultados_prompt_v2.json"
+            casos_path.write_text(
+                json.dumps(
+                    [
+                        {
+                            "id": "caso_15",
+                            "mensagem": "Você foi selecionado para uma vaga.",
+                            "classificacao_esperada": "alto_risco",
+                        }
+                    ],
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            dados = executar_avaliacao(
+                "v2",
+                caminho_casos=casos_path,
+                caminho_resultados=resultados_path,
+                saida=lambda _texto: None,
+            )
+            resultado_foi_salvo = resultados_path.exists()
+
+        self.assertEqual(dados["versao_prompt"], "v2")
+        self.assertEqual(dados["metricas"]["total_casos"], 1)
+        self.assertEqual(analisar.call_args.args[1], SYSTEM_PROMPT_V2)
+        self.assertTrue(resultado_foi_salvo)
 
     def test_rejeita_versao_de_prompt_invalida(self) -> None:
         with self.assertRaisesRegex(ValueError, "versão do prompt"):

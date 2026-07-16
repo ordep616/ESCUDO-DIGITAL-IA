@@ -2,22 +2,74 @@
 
 from __future__ import annotations
 
+import argparse
 import json
+from collections.abc import Callable, Iterable
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from ai_service import AIServiceError, analisar_mensagem
+from privacy import anonimizar_cpf_telefone
+from prompts import SYSTEM_PROMPT_V1, SYSTEM_PROMPT_V2
+from safety import validar_mensagem_usuario
 from validator import CLASSIFICACOES_PERMITIDAS, validar_resposta_ia
-from datetime import datetime, timezone
 
 
 BASE_DIR = Path(__file__).resolve().parent
 CASOS_PATH = BASE_DIR / "data" / "casos_teste.json"
 RESULTADOS_V1_PATH = BASE_DIR / "data" / "resultados_prompt_v1.json"
+RESULTADOS_V2_PATH = BASE_DIR / "data" / "resultados_prompt_v2.json"
+PROMPTS_DISPONIVEIS = {
+    "v1": SYSTEM_PROMPT_V1,
+    "v2": SYSTEM_PROMPT_V2,
+}
+RESULTADOS_POR_PROMPT = {
+    "v1": RESULTADOS_V1_PATH,
+    "v2": RESULTADOS_V2_PATH,
+}
 
 CAMPOS_OBRIGATORIOS_CASO = {
     "id",
     "mensagem",
     "classificacao_esperada",
 }
+
+
+def selecionar_prompt(versao_prompt: str) -> str:
+    """Retorna o prompt correspondente à versão informada."""
+    try:
+        return PROMPTS_DISPONIVEIS[versao_prompt]
+    except KeyError as erro:
+        raise ValueError("versão do prompt deve ser v1 ou v2") from erro
+
+
+def caminho_resultados_prompt(versao_prompt: str) -> Path:
+    """Retorna o arquivo padrão de resultados para a versão do prompt."""
+    try:
+        return RESULTADOS_POR_PROMPT[versao_prompt]
+    except KeyError as erro:
+        raise ValueError("versão do prompt deve ser v1 ou v2") from erro
+
+
+def filtrar_casos_por_ids(
+    casos: list[dict[str, Any]],
+    ids_casos: Iterable[str] | None,
+) -> list[dict[str, Any]]:
+    """Filtra casos por identificador preservando a ordem do arquivo."""
+    if ids_casos is None:
+        return casos
+
+    ids = set(ids_casos)
+    casos_filtrados = [caso for caso in casos if caso["id"] in ids]
+    encontrados = {caso["id"] for caso in casos_filtrados}
+    ausentes = sorted(ids - encontrados)
+
+    if ausentes:
+        raise ValueError(f"casos não encontrados: {', '.join(ausentes)}")
+
+    return casos_filtrados
+
 
 def carregar_casos(
     caminho: str | Path = CASOS_PATH,
@@ -135,6 +187,28 @@ def avaliar_caso(
         ),
         "erros_validacao": [],
     }
+
+
+def analisar_caso_com_prompt(
+    mensagem: str,
+    prompt: str,
+    cliente: Any = None,
+) -> dict[str, Any]:
+    """Analisa uma mensagem usando explicitamente o prompt informado."""
+    mensagem_validada = validar_mensagem_usuario(mensagem)
+    mensagem_segura = anonimizar_cpf_telefone(mensagem_validada)
+    resposta_textual = analisar_mensagem(mensagem_segura, prompt, cliente)
+
+    try:
+        resposta = json.loads(resposta_textual)
+    except json.JSONDecodeError as erro:
+        raise ValueError(
+            "A IA retornou uma resposta que não está em JSON válido."
+        ) from erro
+
+    return resposta
+
+
 def calcular_metricas(
     resultados: list[dict[str, Any]],
 ) -> dict[str, int | float]:
@@ -185,10 +259,10 @@ def calcular_metricas(
 def salvar_resultados(
     resultados: list[dict[str, Any]],
     versao_prompt: str,
-    caminho: str | Path = RESULTADOS_V1_PATH,
+    caminho: str | Path | None = None,
 ) -> dict[str, Any]:
     """Salva métricas e resultados sem copiar as mensagens analisadas."""
-    if versao_prompt not in {"v1", "v2"}:
+    if versao_prompt not in PROMPTS_DISPONIVEIS:
         raise ValueError("versão do prompt deve ser v1 ou v2")
 
     metricas = calcular_metricas(resultados)
@@ -217,7 +291,9 @@ def salvar_resultados(
         "resultados": resultados_seguros,
     }
 
-    caminho = Path(caminho)
+    caminho = Path(caminho) if caminho is not None else caminho_resultados_prompt(
+        versao_prompt
+    )
     caminho.parent.mkdir(parents=True, exist_ok=True)
     caminho.write_text(
         json.dumps(dados_saida, ensure_ascii=False, indent=2) + "\n",
@@ -227,21 +303,26 @@ def salvar_resultados(
     return dados_saida
 
 
-def executar_avaliacao_v1() -> dict[str, Any]:
-    """Executa os 30 casos usando o Prompt V1."""
-    from ai_service import AIServiceError
-    from main import RespostaIAInvalidaError, processar_mensagem
-
-    casos = carregar_casos()
+def executar_avaliacao(
+    versao_prompt: str = "v1",
+    ids_casos: Iterable[str] | None = None,
+    caminho_casos: str | Path = CASOS_PATH,
+    caminho_resultados: str | Path | None = None,
+    cliente: Any = None,
+    saida: Callable[[str], None] = print,
+) -> dict[str, Any]:
+    """Executa casos usando a versão de prompt selecionada."""
+    prompt = selecionar_prompt(versao_prompt)
+    casos = filtrar_casos_por_ids(carregar_casos(caminho_casos), ids_casos)
     resultados = []
 
     for numero, caso in enumerate(casos, start=1):
-        print(f"Executando {caso['id']} ({numero}/{len(casos)})...")
+        saida(f"Executando {caso['id']} ({numero}/{len(casos)})...")
 
         try:
-            resposta = processar_mensagem(caso["mensagem"])
+            resposta = analisar_caso_com_prompt(caso["mensagem"], prompt, cliente)
             resultado = avaliar_caso(caso, resposta)
-        except (AIServiceError, RespostaIAInvalidaError, ValueError) as erro:
+        except (AIServiceError, ValueError) as erro:
             resultado = {
                 "id": caso["id"],
                 "esperado": caso["classificacao_esperada"],
@@ -253,21 +334,53 @@ def executar_avaliacao_v1() -> dict[str, Any]:
 
         resultados.append(resultado)
 
-        print(f"Esperado: {resultado['esperado']}")
-        print(f"Obtido: {resultado['obtido']}")
-        print(f"Resultado: {resultado['resultado']}\n")
+        saida(f"Esperado: {resultado['esperado']}")
+        saida(f"Obtido: {resultado['obtido']}")
+        saida(f"Resultado: {resultado['resultado']}\n")
 
     dados = salvar_resultados(
         resultados,
-        "v1",
-        RESULTADOS_V1_PATH,
+        versao_prompt,
+        caminho_resultados,
     )
 
-    print("Resumo:")
-    print(json.dumps(dados["metricas"], indent=2, ensure_ascii=False))
+    saida("Resumo:")
+    saida(json.dumps(dados["metricas"], indent=2, ensure_ascii=False))
 
     return dados
 
 
+def executar_avaliacao_v1() -> dict[str, Any]:
+    """Executa os casos usando o Prompt V1."""
+    return executar_avaliacao("v1")
+
+
+def executar_avaliacao_v2(
+    ids_casos: Iterable[str] | None = None,
+) -> dict[str, Any]:
+    """Executa os casos usando o Prompt V2."""
+    return executar_avaliacao("v2", ids_casos=ids_casos)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Executa a avaliação pela linha de comando."""
+    parser = argparse.ArgumentParser(description="Avalia os casos fictícios.")
+    parser.add_argument(
+        "--prompt",
+        choices=sorted(PROMPTS_DISPONIVEIS),
+        default="v1",
+        help="versão do prompt usada na avaliação",
+    )
+    parser.add_argument(
+        "--casos",
+        nargs="*",
+        help="ids específicos de casos para avaliar",
+    )
+    args = parser.parse_args(argv)
+
+    executar_avaliacao(args.prompt, ids_casos=args.casos)
+    return 0
+
+
 if __name__ == "__main__":
-    executar_avaliacao_v1()
+    raise SystemExit(main())

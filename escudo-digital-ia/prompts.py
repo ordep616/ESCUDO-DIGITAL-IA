@@ -103,6 +103,56 @@ def montar_system_prompt() -> str:
 SYSTEM_PROMPT_V1 = montar_system_prompt()
 
 
+def regras_de_decisao_v2() -> str:
+    return """
+Regras de decisão adicionais do Prompt V2:
+- Classifique como baixo_risco mensagens informativas que orientam o usuário a
+  consultar aplicativo, portal, site ou canal oficial, desde que não contenham
+  link desconhecido, urgência, ameaça, pedido de senha, código, dinheiro,
+  dados pessoais ou tentativa de impedir verificação.
+- Confirmações simples de entrega, inscrição, extrato, agendamento ou
+  disponibilidade de informação em canal oficial tendem a baixo_risco quando
+  não solicitam ação perigosa.
+- Classifique como informacao_insuficiente mensagens genéricas ou vagas que
+  não identifiquem remetente, assunto ou contexto e também não apresentem sinal
+  concreto de risco.
+- Classifique como moderado oportunidades de trabalho, vaga, renda extra ou
+  seleção recebidas sem solicitação ou sem identificação suficiente da empresa,
+  mesmo quando ainda não houver pedido de dinheiro, dados pessoais ou link.
+- Nunca reduza o risco quando houver pedido de senha, código, dinheiro, dados
+  pessoais, link desconhecido, urgência, ameaça ou tentativa de impedir
+  verificação.
+"""
+
+
+def identificar_sinais_v2() -> str:
+    return """
+Além dos sinais do Prompt V1, o Prompt V2 pode identificar:
+- oferta_nao_solicitada
+- falta_de_identificacao
+- mensagem_generica
+- orientacao_canal_oficial
+"""
+
+
+def montar_system_prompt_v2() -> str:
+    partes = [
+        introducao_assistente(),
+        regras_de_seguranca(),
+        valores_de_risco(),
+        regras_de_decisao_v2(),
+        identificar_sinais(),
+        identificar_sinais_v2(),
+        recomendacoes_permitidas(),
+        formato_json_resposta(),
+    ]
+
+    return "\n".join(parte.strip() for parte in partes)
+
+
+SYSTEM_PROMPT_V2 = montar_system_prompt_v2()
+
+
 def montar_prompt_analise(mensagem: str) -> str:
     return f"""
 Analise a mensagem abaixo como possível tentativa de golpe digital.
