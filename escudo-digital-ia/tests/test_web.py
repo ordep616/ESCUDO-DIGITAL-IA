@@ -9,13 +9,16 @@ from web import CAMINHO_LOGO
 from web import ESTILO_MODAL
 from web import ESTILO_SITE
 from web import MARCA_SITE_HTML
+from web import TIPOS_IMAGEM_UPLOAD
 from web import avancar_exercicio, formatar_confianca
+from web import carregamento_ia_html
 from web import carregar_logo_base64
 from web import detalhes_aprender_html
 from web import dividir_explicacao_aprender
 from web import fechar_modal
 from web import instalar_atalhos_teclado
 from web import mensagem_feedback_aprender
+from web import processar_entrada_analise
 from web import preparar_estado_menu, selecionar_modo
 from web import preparar_upload_imagem
 from web import selecionar_modal
@@ -27,6 +30,20 @@ from web import rotulo_item_aprender
 
 
 class WebTests(unittest.TestCase):
+    def test_upload_de_imagem_expõe_formatos_aceitos(self) -> None:
+        self.assertEqual(
+            TIPOS_IMAGEM_UPLOAD,
+            ["png", "jpg", "jpeg", "webp"],
+        )
+
+    def test_carregamento_da_ia_exibe_status_seguro(self) -> None:
+        html = carregamento_ia_html("<script>alert('x')</script>")
+
+        self.assertIn("escudo-loading-ia", html)
+        self.assertIn("escudo-loading-spinner", html)
+        self.assertIn("&lt;script&gt;", html)
+        self.assertNotIn("<script>", html)
+
     def test_upload_de_imagem_exige_arquivo(self) -> None:
         with self.assertRaisesRegex(ValueError, "Selecione uma imagem"):
             preparar_upload_imagem(None, True)
@@ -53,6 +70,55 @@ class WebTests(unittest.TestCase):
 
         self.assertEqual(imagem, b"imagem")
         self.assertEqual(tipo_mime, "image/png")
+
+    def test_analise_sem_imagem_usa_mensagem(self) -> None:
+        chamadas = []
+
+        def processador_mensagem(mensagem: str) -> dict[str, bool]:
+            chamadas.append(("mensagem", mensagem))
+            return {"ok": True}
+
+        def processador_imagem(_imagem: bytes, _tipo_mime: str) -> dict[str, bool]:
+            self.fail("processador de imagem não deveria ser chamado")
+
+        resultado = processar_entrada_analise(
+            "mensagem suspeita",
+            None,
+            False,
+            processador_mensagem=processador_mensagem,
+            processador_imagem=processador_imagem,
+        )
+
+        self.assertEqual(resultado, {"ok": True})
+        self.assertEqual(chamadas, [("mensagem", "mensagem suspeita")])
+
+    def test_analise_com_imagem_usa_upload_autorizado(self) -> None:
+        chamadas = []
+        arquivo = SimpleNamespace(
+            type="image/jpeg",
+            getvalue=lambda: b"imagem",
+        )
+
+        def processador_mensagem(_mensagem: str) -> dict[str, bool]:
+            self.fail("processador textual não deveria ser chamado")
+
+        def processador_imagem(
+            imagem: bytes,
+            tipo_mime: str,
+        ) -> dict[str, bool]:
+            chamadas.append(("imagem", imagem, tipo_mime))
+            return {"ok": True}
+
+        resultado = processar_entrada_analise(
+            "texto opcional",
+            arquivo,
+            True,
+            processador_mensagem=processador_mensagem,
+            processador_imagem=processador_imagem,
+        )
+
+        self.assertEqual(resultado, {"ok": True})
+        self.assertEqual(chamadas, [("imagem", b"imagem", "image/jpeg")])
 
     def test_estado_da_web_inicia_no_menu_principal(self) -> None:
         estado = {}
@@ -150,6 +216,10 @@ class WebTests(unittest.TestCase):
         self.assertIn("escudo-learning-details", ESTILO_SITE)
         self.assertIn("escudo-learning-topic-list", ESTILO_SITE)
         self.assertIn("escudo-learning-topic-item", ESTILO_SITE)
+        self.assertIn("escudo-loading-ia", ESTILO_SITE)
+        self.assertIn("escudo-loading-spinner", ESTILO_SITE)
+        self.assertIn("escudo-spin", ESTILO_SITE)
+        self.assertIn("st-key-escudo-upload-imagem", ESTILO_SITE)
         self.assertIn("button[kind=\"primary\"]", ESTILO_SITE)
         self.assertIn("st-key-escudo-modal-analise", ESTILO_SITE)
         self.assertIn("st-key-escudo-modal-aprender", ESTILO_SITE)

@@ -42,6 +42,15 @@ OPCOES_CLASSIFICACAO = [
     "informacao_insuficiente",
 ]
 
+TIPOS_IMAGEM_UPLOAD = ["png", "jpg", "jpeg", "webp"]
+AVISO_ENVIO_IMAGEM = (
+    "A imagem será enviada ao serviço de IA e pode conter dados pessoais. "
+    "Recorte informações desnecessárias antes de continuar."
+)
+AUTORIZACAO_ENVIO_IMAGEM = (
+    "Entendi e autorizo o envio desta imagem ao serviço de IA."
+)
+
 ROTULOS_ITENS_APRENDER = {
     "ameaca": "Ameaça",
     "bloquear_e_denunciar": "Bloquear e denunciar",
@@ -475,6 +484,123 @@ div[data-testid="stLayoutWrapper"]:has(> .st-key-escudo-modal-aprender) {
 textarea,
 [data-baseweb="select"] > div {
     border-color: rgba(0, 217, 255, 0.28) !important;
+}
+
+.st-key-escudo-caixa-mensagem {
+    position: relative;
+}
+
+.st-key-escudo-caixa-mensagem textarea {
+    padding-right: 4.75rem !important;
+    padding-bottom: 3.75rem !important;
+}
+
+.st-key-escudo-upload-imagem {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    z-index: 7;
+    width: 46px !important;
+}
+
+.st-key-escudo-upload-imagem [data-testid="stFileUploader"] {
+    width: 46px !important;
+}
+
+.st-key-escudo-upload-imagem [data-testid="stFileUploader"] > label,
+.st-key-escudo-upload-imagem [data-testid="stFileUploaderDropzoneInstructions"],
+.st-key-escudo-upload-imagem [data-testid="stFileUploaderFile"],
+.st-key-escudo-upload-imagem small {
+    display: none !important;
+}
+
+.st-key-escudo-upload-imagem section {
+    width: 46px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: hidden;
+}
+
+.st-key-escudo-upload-imagem section:hover {
+    background: rgba(0, 217, 255, 0.10) !important;
+    box-shadow: 0 0 18px rgba(0, 217, 255, 0.18) !important;
+}
+
+.st-key-escudo-upload-imagem button {
+    display: grid !important;
+    place-items: center !important;
+    width: 46px !important;
+    min-width: 46px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--escudo-white) !important;
+    font-size: 0 !important;
+}
+
+.st-key-escudo-upload-imagem button > * {
+    display: none !important;
+}
+
+.st-key-escudo-upload-imagem button::before {
+    content: "";
+    display: block;
+    width: 31px;
+    height: 31px;
+    background: var(--escudo-white);
+    -webkit-mask:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M5 21h14a3 3 0 0 0 3-3v-5h-3v5H5v-5H2v5a3 3 0 0 0 3 3Zm5.5-7h3V7.9l2.35 2.35L18 8.1 12 2 6 8.1l2.15 2.15L10.5 7.9V14Z'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+    mask:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M5 21h14a3 3 0 0 0 3-3v-5h-3v5H5v-5H2v5a3 3 0 0 0 3 3Zm5.5-7h3V7.9l2.35 2.35L18 8.1 12 2 6 8.1l2.15 2.15L10.5 7.9V14Z'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+}
+
+.st-key-escudo-upload-imagem button:hover {
+    transform: none !important;
+}
+
+.escudo-loading-ia {
+    width: min(840px, 100%);
+    margin: 0 auto 0.75rem;
+    padding: 0.78rem 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.72rem;
+    border: 1px solid rgba(0, 217, 255, 0.34);
+    border-left: 4px solid var(--escudo-green);
+    border-radius: 12px;
+    background:
+        linear-gradient(135deg, rgba(5, 30, 58, 0.98), rgba(3, 8, 23, 0.98));
+    box-shadow: 0 0 24px rgba(0, 217, 255, 0.12);
+    color: rgba(245, 247, 250, 0.90);
+    font-size: 0.95rem;
+    font-weight: 750;
+}
+
+.escudo-loading-spinner {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    border: 2px solid rgba(245, 247, 250, 0.24);
+    border-top-color: var(--escudo-green);
+    border-radius: 999px;
+    animation: escudo-spin 820ms linear infinite;
+}
+
+@keyframes escudo-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 @media (max-width: 780px) {
@@ -1106,60 +1232,108 @@ def preparar_upload_imagem(
     return imagem, tipo_mime
 
 
-def renderizar_aba_analise() -> None:
+def carregamento_ia_html(
+    mensagem: str = "IA analisando o conteúdo...",
+) -> str:
+    return (
+        '<div class="escudo-loading-ia" role="status">'
+        '<span class="escudo-loading-spinner" aria-hidden="true"></span>'
+        f"<span>{escape(mensagem)}</span>"
+        "</div>"
+    )
+
+
+def renderizar_carregamento_ia(
+    destino: Any,
+    mensagem: str = "IA analisando o conteúdo...",
+) -> None:
+    destino.markdown(
+        carregamento_ia_html(mensagem),
+        unsafe_allow_html=True,
+    )
+
+
+def processar_entrada_analise(
+    mensagem: str,
+    arquivo_imagem: Any,
+    autorizado: bool,
+    processador_mensagem: Callable[[str], dict[str, Any]] = processar_mensagem,
+    processador_imagem: Callable[[bytes, str], dict[str, Any]] = processar_imagem,
+) -> dict[str, Any]:
+    if arquivo_imagem is not None:
+        imagem, tipo_mime = preparar_upload_imagem(
+            arquivo_imagem,
+            autorizado,
+        )
+        return processador_imagem(
+            imagem,
+            tipo_mime,
+        )
+
+    return processador_mensagem(mensagem)
+
+
+def renderizar_entrada_analise() -> tuple[str, Any]:
+    with st.container(key="escudo-caixa-mensagem"):
+        mensagem = st.text_area(
+            "Cole uma mensagem fictícia ou previamente anonimizada:",
+            height=180,
+            key="mensagem_analise",
+        )
+        arquivo_imagem = st.file_uploader(
+            "Adicionar imagem",
+            type=TIPOS_IMAGEM_UPLOAD,
+            accept_multiple_files=False,
+            label_visibility="collapsed",
+            key="escudo-upload-imagem",
+        )
+
+    return mensagem, arquivo_imagem
+
+
+def renderizar_aba_analise(carregamento_ia: Any | None = None) -> None:
     st.subheader("Analisar conteúdo")
     preparar_estado_analise(st.session_state)
 
-    with st.form("form_analise", enter_to_submit=True):
-        tipo_entrada = st.radio(
-            "O que você deseja analisar?",
-            ("Mensagem", "Imagem"),
-            horizontal=True,
+    mensagem, arquivo_imagem = renderizar_entrada_analise()
+    autorizado = False
+
+    if arquivo_imagem is None:
+        st.caption(
+            "Use o ícone no canto inferior direito da caixa para enviar "
+            "PNG, JPEG ou WEBP."
+        )
+    else:
+        nome_arquivo = getattr(
+            arquivo_imagem,
+            "name",
+            "imagem selecionada",
+        )
+        st.info(f"Imagem selecionada: {nome_arquivo}")
+        st.warning(AVISO_ENVIO_IMAGEM)
+        autorizado = st.checkbox(
+            AUTORIZACAO_ENVIO_IMAGEM,
+            key="autorizacao_imagem_analise",
         )
 
-        mensagem = ""
-        arquivo_imagem = None
-        autorizado = False
-
-        if tipo_entrada == "Mensagem":
-            mensagem = st.text_area(
-                "Cole uma mensagem fictícia ou previamente anonimizada:",
-                height=180,
-            )
-        else:
-            st.warning(
-                "A imagem será enviada ao serviço de IA e pode conter "
-                "dados pessoais. Recorte informações desnecessárias "
-                "antes de continuar."
-            )
-
-            arquivo_imagem = st.file_uploader(
-                "Envie uma captura de tela:",
-                type=["png", "jpg", "jpeg", "webp"],
-                accept_multiple_files=False,
-            )
-
-            autorizado = st.checkbox(
-                "Entendi e autorizo o envio desta imagem "
-                "ao serviço de IA."
-            )
-
-        analisar = st.form_submit_button("Analisar")
+    analisar = st.button(
+        "Analisar",
+        type="primary",
+        use_container_width=True,
+        key="analisar_conteudo",
+    )
 
     if analisar:
         try:
-            if tipo_entrada == "Imagem":
-                imagem, tipo_mime = preparar_upload_imagem(
+            if carregamento_ia is not None:
+                renderizar_carregamento_ia(carregamento_ia)
+
+            with st.spinner("Analisando conteúdo..."):
+                resultado = processar_entrada_analise(
+                    mensagem,
                     arquivo_imagem,
                     autorizado,
                 )
-
-                resultado = processar_imagem(
-                    imagem,
-                    tipo_mime,
-                )
-            else:
-                resultado = processar_mensagem(mensagem)
 
             st.session_state["resultado_analise"] = resultado
             st.session_state["feedback_registrado"] = False
@@ -1174,6 +1348,9 @@ def renderizar_aba_analise() -> None:
             st.error(
                 f"Não foi possível concluir a análise: {erro}"
             )
+        finally:
+            if carregamento_ia is not None:
+                carregamento_ia.empty()
 
     resultado = st.session_state["resultado_analise"]
 
@@ -1258,6 +1435,7 @@ def renderizar_aba_aprender() -> None:
 
 def renderizar_menu_principal() -> None:
     st.subheader("Menu principal")
+    carregamento_ia = st.empty()
 
     coluna_analise, coluna_aprender, coluna_sair = st.columns(3)
 
@@ -1272,7 +1450,7 @@ def renderizar_menu_principal() -> None:
         st.rerun()
 
     if st.session_state["modal_web"] == "analise":
-        renderizar_modal_analise()
+        renderizar_modal_analise(carregamento_ia)
     elif st.session_state["modal_web"] == "aprender":
         renderizar_modal_aprender()
 
@@ -1289,14 +1467,14 @@ def renderizar_tela_sair() -> None:
     renderizar_botao_voltar_menu()
 
 
-def renderizar_modal_analise() -> None:
+def renderizar_modal_analise(carregamento_ia: Any | None = None) -> None:
     aplicar_estilo_modal()
     with st.container(
         border=True,
         height=ALTURA_MODAL,
         key="escudo-modal-analise",
     ):
-        renderizar_aba_analise()
+        renderizar_aba_analise(carregamento_ia)
 
 
 def renderizar_modal_aprender() -> None:
