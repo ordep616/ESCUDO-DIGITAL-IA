@@ -20,20 +20,21 @@ compreensível para pessoas sem conhecimento técnico.
   autenticação e links;
 - criar testes automáticos para todos os tipos de dado mascarado;
 - verificar que o texto integral não é salvo no histórico;
-- criar no SQLite o armazenamento das avaliações `util` e `nao_util`.
+- criar no SQLite o armazenamento das avaliações `util` e `nao_util`;
+- criar e classificar os dez exercícios fictícios do modo “Aprender”;
+- escrever os sinais, as explicações e as recomendações de cada exercício;
+- testar a privacidade e o armazenamento e documentar essas atividades.
 
 ### Parte do colaborador
 
-- implementar as regras locais em `safety.py`;
-- criar o modo “Aprender” com no mínimo dez exercícios fictícios;
-- carregar e validar os exercícios utilizados no modo educativo;
-- mostrar os sinais, a explicação e as recomendações após cada resposta;
-- conectar `registrar_avaliacao()` à interface;
-- criar uma página web simples ou uma interface no Telegram, conforme a
-  decisão da equipe;
-- revisar a linguagem para usuários sem conhecimento técnico;
-- criar testes automáticos para o fluxo educativo e para a integração da
-  avaliação.
+- implementar as regras locais em `safety.py` e criar seus testes;
+- implementar o fluxo do modo “Aprender”, carregando e validando os exercícios
+  preparados por Pedro;
+- comparar a resposta do usuário, mostrar a explicação e calcular a pontuação;
+- integrar o modo “Aprender” ao menu principal;
+- criar a interface web em Streamlit;
+- conectar `registrar_avaliacao()` à interface, revisar a linguagem e criar
+  testes do fluxo educativo e da integração.
 
 ## Atividades concluídas por Pedro
 
@@ -47,6 +48,8 @@ compreensível para pessoas sem conhecimento técnico.
   `nao_util`;
 - [x] testar avaliações válidas, inválidas e valores que não sejam texto;
 - [x] confirmar que a tabela de avaliações não possui coluna para mensagem;
+- [x] criar e classificar dez exercícios fictícios para o modo “Aprender”;
+- [x] escrever os sinais, as explicações e as recomendações dos exercícios;
 - [x] executar os testes específicos e a suíte completa;
 - [x] realizar commits pequenos e enviar as alterações ao GitHub.
 
@@ -119,7 +122,7 @@ A função `registrar_avaliacao()`:
 Os testes também conferem que a tabela `avaliacoes` possui somente as colunas
 `id`, `valor` e `criado_em`.
 
-## Material do modo “Aprender”
+## Material do modo “Aprender” criado por Pedro
 
 O projeto possui `data/exercicios_aprender.json` como base local do modo
 educativo. O arquivo contém dez exercícios fictícios, e cada exercício possui:
@@ -145,7 +148,12 @@ O arquivo JSON contém conteúdo fixo e versionado. Ele não é armazenado dentr
 do SQLite. O SQLite permanece reservado para informações geradas durante a
 execução, como métricas e avaliações.
 
-## Atividade concluída pelo colaborador
+Pedro criou esse conjunto de exercícios no commit `ff7dfb6`. O colaborador
+utilizou o arquivo como entrada para implementar o fluxo do modo “Aprender” em
+`aprender.py`, mantendo separadas a criação do conteúdo educativo e a execução
+do programa.
+
+## Atividade concluída pelo enrico
 
 ### Regras locais de segurança
 
@@ -161,8 +169,8 @@ Essa atividade está registrada no commit `2a0b4b6`.
 
 ### Modo “Aprender”
 
-O colaborador implementou `aprender.py`, que carrega e valida exatamente dez
-exercícios do arquivo JSON. Em cada exercício, o fluxo:
+O colaborador implementou `aprender.py`, que carrega e valida os dez exercícios
+criados por Pedro no arquivo JSON. Em cada exercício, o fluxo:
 
 1. apresenta uma mensagem fictícia;
 2. solicita uma das quatro classificações permitidas;
@@ -312,33 +320,7 @@ O Codex foi utilizado para:
 - `2a0b4b6` — implementa regras locais de segurança;
 - `757ed43` — amplia a anonimização de dados sensíveis;
 - `d2129e7` — adiciona o armazenamento de avaliações;
-- `ff7dfb6` — adiciona os exercícios do modo “Aprender”;
+- `ff7dfb6` — Pedro adiciona e classifica os dez exercícios do modo “Aprender”;
 - `94e2d44` — implementa o fluxo do modo “Aprender”;
 - `91878a5` — cria a primeira versão da interface web;
 - `db84c0f` — corrige regressões e integra menu, avaliação e testes web.
-
-## O que Pedro deve saber explicar da parte do colaborador
-
-- o problema resolvido por `safety.py`;
-- por que a validação ocorre antes da chamada à IA;
-- como mensagens vazias e grandes são rejeitadas;
-- como o modo “Aprender” carrega e valida o JSON;
-- como a escolha do usuário é comparada com a resposta esperada;
-- por que a explicação deve aparecer tanto em acertos quanto em erros;
-- como a pontuação é calculada sem chamar a API;
-- como o menu encaminha o usuário para análise ou modo educativo;
-- como a interface web registra feedback sem salvar a mensagem.
-
-## O que o colaborador deve saber explicar da parte de Pedro
-
-- como os seis tipos de dados são localizados e substituídos;
-- por que a função antiga de privacidade foi mantida;
-- por que mensagens não são armazenadas;
-- diferença entre conteúdo fixo no JSON e dados de execução no SQLite;
-- como `registrar_avaliacao()` valida e salva apenas `util` ou `nao_util`;
-- como os testes temporários protegem o banco real.
-
-## Pendências para concluir o Dia 3
-
-- [ ] testar manualmente a análise, o modo “Aprender” e o feedback na interface;
-- [ ] alterar o status do relatório para concluído após a validação final.
