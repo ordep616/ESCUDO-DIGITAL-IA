@@ -1,6 +1,7 @@
 """Testes das regras auxiliares da interface web."""
 
 import unittest
+from types import SimpleNamespace
 
 from web import ATALHOS_TECLADO_HTML
 from web import ALTURA_MODAL
@@ -16,6 +17,7 @@ from web import fechar_modal
 from web import instalar_atalhos_teclado
 from web import mensagem_feedback_aprender
 from web import preparar_estado_menu, selecionar_modo
+from web import preparar_upload_imagem
 from web import selecionar_modal
 from web import registrar_feedback_analise, registrar_resposta_aprender
 from web import renderizar_modal_analise, renderizar_modal_aprender
@@ -25,6 +27,33 @@ from web import rotulo_item_aprender
 
 
 class WebTests(unittest.TestCase):
+    def test_upload_de_imagem_exige_arquivo(self) -> None:
+        with self.assertRaisesRegex(ValueError, "Selecione uma imagem"):
+            preparar_upload_imagem(None, True)
+
+    def test_upload_de_imagem_exige_autorizacao(self) -> None:
+        arquivo = SimpleNamespace(
+            type="image/png",
+            getvalue=lambda: b"imagem",
+        )
+
+        with self.assertRaisesRegex(ValueError, "autoriza"):
+            preparar_upload_imagem(arquivo, False)
+
+    def test_upload_de_imagem_retorna_bytes_e_tipo(self) -> None:
+        arquivo = SimpleNamespace(
+            type="image/png",
+            getvalue=lambda: b"imagem",
+        )
+
+        imagem, tipo_mime = preparar_upload_imagem(
+            arquivo,
+            True,
+        )
+
+        self.assertEqual(imagem, b"imagem")
+        self.assertEqual(tipo_mime, "image/png")
+
     def test_estado_da_web_inicia_no_menu_principal(self) -> None:
         estado = {}
 

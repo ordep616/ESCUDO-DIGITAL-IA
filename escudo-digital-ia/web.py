@@ -13,7 +13,11 @@ from PIL import Image
 
 from aprender import CLASSIFICACOES_VALIDAS, carregar_exercicios
 from ai_service import AIServiceError
-from main import RespostaIAInvalidaError, processar_mensagem
+from main import (
+    RespostaIAInvalidaError,
+    processar_imagem,
+    processar_mensagem,
+)
 from storage import registrar_avaliacao
 
 
@@ -1076,26 +1080,100 @@ def renderizar_feedback_analise() -> None:
         st.caption("Sua avaliação já foi registrada.")
 
 
+def preparar_upload_imagem(
+    arquivo: Any,
+    autorizado: bool,
+) -> tuple[bytes, str]:
+    """Confere autorização e prepara o arquivo enviado."""
+    if arquivo is None:
+        raise ValueError(
+            "Selecione uma imagem para analisar."
+        )
+
+    if not autorizado:
+        raise ValueError(
+            "Confirme a autorização antes de enviar a imagem."
+        )
+
+    imagem = arquivo.getvalue()
+    tipo_mime = getattr(arquivo, "type", "")
+
+    if not isinstance(imagem, bytes):
+        raise ValueError(
+            "Não foi possível ler a imagem enviada."
+        )
+
+    return imagem, tipo_mime
+
+
 def renderizar_aba_analise() -> None:
-    st.subheader("Analisar mensagem")
+    st.subheader("Analisar conteúdo")
     preparar_estado_analise(st.session_state)
 
     with st.form("form_analise", enter_to_submit=True):
-        mensagem = st.text_area(
-            "Cole uma mensagem fictícia ou previamente anonimizada:",
-            height=180,
+        tipo_entrada = st.radio(
+            "O que você deseja analisar?",
+            ("Mensagem", "Imagem"),
+            horizontal=True,
         )
+
+        mensagem = ""
+        arquivo_imagem = None
+        autorizado = False
+
+        if tipo_entrada == "Mensagem":
+            mensagem = st.text_area(
+                "Cole uma mensagem fictícia ou previamente anonimizada:",
+                height=180,
+            )
+        else:
+            st.warning(
+                "A imagem será enviada ao serviço de IA e pode conter "
+                "dados pessoais. Recorte informações desnecessárias "
+                "antes de continuar."
+            )
+
+            arquivo_imagem = st.file_uploader(
+                "Envie uma captura de tela:",
+                type=["png", "jpg", "jpeg", "webp"],
+                accept_multiple_files=False,
+            )
+
+            autorizado = st.checkbox(
+                "Entendi e autorizo o envio desta imagem "
+                "ao serviço de IA."
+            )
 
         analisar = st.form_submit_button("Analisar")
 
     if analisar:
         try:
-            st.session_state["resultado_analise"] = processar_mensagem(mensagem)
+            if tipo_entrada == "Imagem":
+                imagem, tipo_mime = preparar_upload_imagem(
+                    arquivo_imagem,
+                    autorizado,
+                )
+
+                resultado = processar_imagem(
+                    imagem,
+                    tipo_mime,
+                )
+            else:
+                resultado = processar_mensagem(mensagem)
+
+            st.session_state["resultado_analise"] = resultado
             st.session_state["feedback_registrado"] = False
-        except (ValueError, AIServiceError, RespostaIAInvalidaError) as erro:
+
+        except (
+            ValueError,
+            AIServiceError,
+            RespostaIAInvalidaError,
+        ) as erro:
             st.session_state["resultado_analise"] = None
             st.session_state["feedback_registrado"] = False
-            st.error(f"Não foi possível concluir a análise: {erro}")
+            st.error(
+                f"Não foi possível concluir a análise: {erro}"
+            )
 
     resultado = st.session_state["resultado_analise"]
 
