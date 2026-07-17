@@ -14,6 +14,10 @@ from prompts import SYSTEM_PROMPT_V1
 from safety import validar_mensagem_usuario
 from storage import registrar_consumo_basico
 from validator import validar_resposta_ia
+from vision_service import (
+    extrair_evidencias_imagem,
+    formatar_evidencias_para_analise,
+)
 
 
 class RespostaIAInvalidaError(Exception):
@@ -46,6 +50,28 @@ def processar_mensagem(mensagem: str, cliente: Any = None) -> dict[str, Any]:
         )
 
     return resposta
+
+
+def processar_imagem(
+    imagem: bytes,
+    tipo_mime: str,
+    cliente: Any = None,
+) -> dict[str, Any]:
+    """Extrai evidências da imagem e reutiliza o fluxo atual."""
+    evidencias = extrair_evidencias_imagem(
+        imagem,
+        tipo_mime,
+        cliente,
+    )
+
+    contexto_visual = formatar_evidencias_para_analise(
+        evidencias
+    )
+
+    return processar_mensagem(
+        contexto_visual,
+        cliente,
+    )
 
 
 def executar_cli(
