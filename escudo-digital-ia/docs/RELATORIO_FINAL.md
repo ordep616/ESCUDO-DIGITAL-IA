@@ -34,7 +34,7 @@ O público principal do projeto é formado por:
 - famílias;
 - pessoas com pouca experiência digital;
 - usuários que recebem mensagens suspeitas por SMS, e-mail ou aplicativos de
-  conversa.
+conversa.
 
 O produto foi projetado para explicar riscos com linguagem acessível, sem
 substituir bancos, autoridades, profissionais de segurança ou canais oficiais.
@@ -43,23 +43,27 @@ substituir bancos, autoridades, profissionais de segurança ou canais oficiais.
 
 A construção foi organizada em cinco etapas:
 
-| Dia | Entrega principal |
-|---|---|
-| 1 | Definição do produto, público, arquitetura, resposta estruturada e 30 casos fictícios classificados manualmente. |
-| 2 | Integração com o OpenRouter, Prompt V1, JSON estruturado, validação, tratamento de erros e métricas de consumo. |
-| 3 | Anonimização de seis tipos de dados, camada de segurança, modo Aprender, avaliação de utilidade e interface web. |
-| 4 | Execução dos 30 casos, análise dos erros, criação e revisão do Prompt V2 e comparação numérica com o V1. |
-| 5 | Revisão da documentação, preparação das demonstrações e organização da entrega final. |
+
+| Dia | Entrega principal                                                                                                |
+| --- | ---------------------------------------------------------------------------------------------------------------- |
+| 1   | Definição do produto, público, arquitetura, resposta estruturada e 30 casos fictícios classificados manualmente. |
+| 2   | Integração com o OpenRouter, Prompt V1, JSON estruturado, validação, tratamento de erros e métricas de consumo.  |
+| 3   | Anonimização de seis tipos de dados, camada de segurança, modo Aprender, avaliação de utilidade e interface web. |
+| 4   | Execução dos 30 casos, análise dos erros, criação e revisão do Prompt V2 e comparação numérica com o V1.         |
+| 5   | Revisão da documentação, preparação das demonstrações e organização da entrega final.                            |
+
 
 As principais ações disponíveis são:
 
 - analisar uma mensagem fictícia ou previamente anonimizada;
 - classificar o risco como `baixo_risco`, `moderado`, `alto_risco` ou
-  `informacao_insuficiente`;
+`informacao_insuficiente`;
 - apresentar sinais, recomendações e explicação educativa;
 - realizar dez exercícios locais no modo Aprender;
 - registrar se uma análise foi útil ou não útil;
 - executar o conjunto de avaliação com o Prompt V1 ou V2.
+
+
 
 ## 4. Arquitetura e fluxo do sistema
 
@@ -100,7 +104,9 @@ Outros componentes importantes são:
 - `evaluator.py`: compara classificações esperadas e obtidas;
 - `data/casos_teste.json`: mantém os 30 casos classificados manualmente;
 - `data/resultados_prompt_v1.json` e `data/resultados_prompt_v2.json`:
-  preservam resultados sem copiar as mensagens.
+preservam resultados sem copiar as mensagens.
+
+
 
 ## 5. Funcionalidades entregues
 
@@ -110,7 +116,7 @@ Foram entregues:
 - resposta estruturada por JSON Schema;
 - validação local dos seis campos obrigatórios;
 - tratamento de timeout, autenticação, conexão, indisponibilidade e resposta
-  vazia ou inválida;
+vazia ou inválida;
 - anonimização local de CPF, telefone, e-mail, cartão, código e link;
 - validação de entrada vazia, tipo incorreto e limite de 1.000 caracteres;
 - interface de terminal com menu principal;
@@ -118,26 +124,30 @@ Foram entregues:
 - modo Aprender com exatamente dez exercícios e explicação após cada resposta;
 - avaliação `util` ou `nao_util` sem vínculo com a mensagem analisada;
 - armazenamento local de quantidade de chamadas, caracteres, tokens
-  aproximados e horário;
+aproximados e horário;
 - 30 casos fictícios distribuídos entre quatro classificações;
 - Prompt V1 e Prompt V2 preservados separadamente;
 - avaliação automática de acertos, falsos positivos, falsos negativos,
-  respostas inválidas e outros erros;
+respostas inválidas e outros erros;
 - testes automáticos dos principais módulos.
+
+
 
 ## 6. Privacidade e segurança
 
 A privacidade foi tratada antes da chamada à API. Os dados reconhecidos são
 substituídos pelos seguintes marcadores:
 
-| Tipo de dado | Marcador |
-|---|---|
-| CPF | `[CPF OCULTADO]` |
-| Telefone | `[TELEFONE OCULTADO]` |
-| E-mail | `[E-MAIL OCULTADO]` |
-| Cartão | `[CARTÃO OCULTADO]` |
-| Código | `[CÓDIGO OCULTADO]` |
-| Link | `[LINK OCULTADO]` |
+
+| Tipo de dado | Marcador              |
+| ------------ | --------------------- |
+| CPF          | `[CPF OCULTADO]`      |
+| Telefone     | `[TELEFONE OCULTADO]` |
+| E-mail       | `[E-MAIL OCULTADO]`   |
+| Cartão       | `[CARTÃO OCULTADO]`   |
+| Código       | `[CÓDIGO OCULTADO]`   |
+| Link         | `[LINK OCULTADO]`     |
+
 
 Também foram aplicadas as seguintes medidas:
 
@@ -190,13 +200,15 @@ completa dos 30 casos.
 As classificações esperadas foram definidas manualmente antes das consultas à
 IA. O conjunto possui:
 
-| Categoria | Quantidade | Classificação esperada |
-|---|---:|---|
-| Alto risco | 10 | `alto_risco` |
-| Risco moderado | 6 | `moderado` |
-| Legítima | 8 | `baixo_risco` |
-| Ambígua | 6 | `informacao_insuficiente` |
-| **Total** | **30** | — |
+
+| Categoria      | Quantidade | Classificação esperada    |
+| -------------- | ---------- | ------------------------- |
+| Alto risco     | 10         | `alto_risco`              |
+| Risco moderado | 6          | `moderado`                |
+| Legítima       | 8          | `baixo_risco`             |
+| Ambígua        | 6          | `informacao_insuficiente` |
+| **Total**      | **30**     | —                         |
+
 
 Para cada caso, o avaliador:
 
@@ -206,7 +218,7 @@ Para cada caso, o avaliador:
 4. valida a resposta estruturada;
 5. compara a classificação esperada com a obtida;
 6. identifica acerto, falso positivo, falso negativo, resposta inválida ou
-   outro erro de classificação;
+  outro erro de classificação;
 7. calcula as métricas gerais;
 8. salva somente campos permitidos.
 
@@ -224,16 +236,18 @@ Antes da execução final, oito casos afetados pelas duas versões foram repetid
 com o Prompt V2 revisado. Os oito acertaram. Depois, os 30 casos foram
 executados novamente.
 
-| Métrica | Prompt V1 | Prompt V2 revisado |
-|---|---:|---:|
-| Total de casos | 30 | 30 |
-| Acertos | 26 | 28 |
-| Erros | 4 | 2 |
-| Taxa de acerto | 86,67% | 93,33% |
-| Falsos positivos | 1 | 1 |
-| Falsos negativos | 0 | 0 |
-| Respostas inválidas | 0 | 0 |
-| Outros erros | 3 | 1 |
+
+| Métrica             | Prompt V1 | Prompt V2 revisado |
+| ------------------- | --------- | ------------------ |
+| Total de casos      | 30        | 30                 |
+| Acertos             | 26        | 28                 |
+| Erros               | 4         | 2                  |
+| Taxa de acerto      | 86,67%    | 93,33%             |
+| Falsos positivos    | 1         | 1                  |
+| Falsos negativos    | 0         | 0                  |
+| Respostas inválidas | 0         | 0                  |
+| Outros erros        | 3         | 1                  |
+
 
 O Prompt V2 revisado aumentou a taxa de acerto em 6,66 pontos percentuais e
 reduziu o total de erros de quatro para dois. O número de falsos positivos
@@ -248,10 +262,12 @@ tenha acertado durante a execução isolada.
 
 Os erros restantes no Prompt V2 revisado foram:
 
-| Caso | Esperado | Obtido | Tipo |
-|---|---|---|---|
-| `caso_12` | `moderado` | `informacao_insuficiente` | erro de classificação |
-| `caso_24` | `baixo_risco` | `moderado` | falso positivo |
+
+| Caso      | Esperado      | Obtido                    | Tipo                  |
+| --------- | ------------- | ------------------------- | --------------------- |
+| `caso_12` | `moderado`    | `informacao_insuficiente` | erro de classificação |
+| `caso_24` | `baixo_risco` | `moderado`                | falso positivo        |
+
 
 O `caso_12` menciona uma atualização de cadastro, mas não identifica claramente
 o remetente. A IA valorizou a falta de contexto, enquanto a classificação
@@ -272,13 +288,15 @@ Limitações conhecidas:
 - a avaliação utiliza somente 30 casos fictícios;
 - classificações esperadas definidas por pessoas também possuem subjetividade;
 - o produto depende da disponibilidade, das regras e dos créditos do
-  OpenRouter;
+OpenRouter;
 - as interfaces de análise ainda utilizam o Prompt V1 enquanto o V2 permanece
-  como versão avaliada no laboratório;
+como versão avaliada no laboratório;
 - estatísticas e resumo do feedback ainda não são apresentados na interface;
 - o aviso fixo completo de segurança ainda precisa ser incluído antes e depois
-  da análise na interface web;
+da análise na interface web;
 - o produto não garante a detecção de golpes e não substitui canais oficiais.
+
+
 
 ## 11. Testes executados
 
@@ -319,17 +337,25 @@ Além da suíte automática, foram realizados:
 - oito chamadas direcionadas com o Prompt V2 revisado;
 - 30 chamadas para a avaliação final do Prompt V2 revisado.
 
+
+
 ### Demonstrações preparadas
 
-| Demonstração | Caso ou recurso | Resultado esperado |
-|---|---|---|
-| Mensagem perigosa com pedido de código | `caso_02` | `alto_risco` |
-| Mensagem legítima sobre aula | `caso_17` | `baixo_risco` |
-| Mensagem ambígua sem contexto | `caso_25` | `informacao_insuficiente` |
-| Mensagem com CPF, telefone e e-mail fictícios | `privacy.py` | substituição pelos marcadores de ocultação |
-| Caso melhorado entre V1 e V2 | `caso_20` | V1: `moderado`; V2: `baixo_risco` |
+
+| Demonstração                                  | Caso ou recurso | Resultado esperado                         |
+| --------------------------------------------- | --------------- | ------------------------------------------ |
+| Mensagem perigosa com pedido de código        | `caso_02`       | `alto_risco`                               |
+| Mensagem legítima sobre aula                  | `caso_17`       | `baixo_risco`                              |
+| Mensagem ambígua sem contexto                 | `caso_25`       | `informacao_insuficiente`                  |
+| Mensagem com CPF, telefone e e-mail fictícios | `privacy.py`    | substituição pelos marcadores de ocultação |
+| Caso melhorado entre V1 e V2                  | `caso_20`       | V1: `moderado`; V2: `baixo_risco`          |
+
+
+
 
 ## 12. Divisão de tarefas e colaboração
+
+
 
 ### Pedro
 
@@ -345,6 +371,8 @@ Além da suíte automática, foram realizados:
 - execução das avaliações V1 e V2;
 - comparação dos resultados e elaboração dos relatórios.
 
+
+
 ### Enrico
 
 - configuração do ambiente e das dependências com Poetry;
@@ -358,10 +386,6 @@ Além da suíte automática, foram realizados:
 - conexão do feedback à interface;
 - criação, análise e revisão do Prompt V2;
 - testes de integração das funcionalidades desenvolvidas.
-
-A dupla utilizou branches, Pull Requests e commits pequenos para integrar as
-alterações. Cada integrante revisou e estudou a parte do outro para conseguir
-explicar o fluxo completo do produto.
 
 ## 13. Como o Codex foi utilizado
 
@@ -396,6 +420,8 @@ chamadas e validação do resultado final.
 - ampliar os formatos reconhecidos pela anonimização;
 - criar testes de interface de ponta a ponta;
 - estudar controle de custo, latência e escolha de modelos.
+
+
 
 ## 15. Conclusão
 
