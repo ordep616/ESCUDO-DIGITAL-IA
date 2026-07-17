@@ -1,9 +1,9 @@
 # Relatório — Dia 3
 
-> Status: implementação e validação automática concluídas. As atividades de
-> Pedro, a camada de segurança, o modo “Aprender”, o menu principal, a avaliação
-> e a interface web já foram integrados. A suíte completa possui 90 testes
-> aprovados. Resta apenas a verificação manual da interface.
+> Status: concluído. As atividades de Pedro, a camada de segurança, o modo
+> “Aprender”, o menu principal, a avaliação e a interface web foram integrados.
+> A suíte completa possui 94 testes aprovados e a interface foi verificada
+> manualmente.
 
 ## Objetivo do dia
 
@@ -259,14 +259,29 @@ Para executar esses testes, a `.venv` foi sincronizada com `poetry install`,
 pois o Streamlit havia sido acrescentado ao `pyproject.toml` e ao
 `poetry.lock` depois da criação do ambiente virtual.
 
-Depois da instalação do Streamlit 1.59.2, a suíte completa foi executada sem
-chamadas externas à API:
+Depois da instalação do Streamlit 1.59.2 e das integrações posteriores, a suíte
+completa foi executada sem chamadas externas à API:
 
 ```text
-Testes automatizados: 90
-Sucessos: 90
+Testes automatizados: 94
+Sucessos: 94
 Falhas: 0
 ```
+
+### Validação manual da interface
+
+A interface também foi verificada manualmente. Foram conferidos:
+
+- abertura e navegação pelo menu principal;
+- envio de uma mensagem fictícia pelo fluxo de análise;
+- apresentação da classificação, confiança, sinais, recomendações e
+  explicação;
+- execução do modo “Aprender” e apresentação das explicações;
+- registro das opções `util` e `nao_util` sem armazenamento da mensagem;
+- retorno ao menu e encerramento da aplicação.
+
+Com essa verificação, as atividades previstas para o Dia 3 foram consideradas
+concluídas.
 
 ## Erros encontrados e aprendizados
 
