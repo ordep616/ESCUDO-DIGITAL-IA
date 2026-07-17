@@ -1,9 +1,5 @@
 # Relatório — Dia 3
 
-> Status: concluído. As atividades de Pedro, a camada de segurança, o modo
-> “Aprender”, o menu principal, a avaliação e a interface web foram integrados.
-> A suíte completa possui 94 testes aprovados e a interface foi verificada
-> manualmente.
 
 ## Objetivo do dia
 
