@@ -1,6 +1,10 @@
 
 # Relatório do Dia 4 — Avaliação e melhoria do prompt
 
+> Status: concluído. O Prompt V1, o primeiro Prompt V2 e o Prompt V2 revisado
+> foram avaliados. A versão revisada obteve 28 acertos em 30 casos, sem falsos
+> negativos e sem respostas inválidas.
+
 ## Objetivo do dia
 
 Avaliar o comportamento da inteligência artificial usando os 30 casos fictícios, comparar as classificações esperadas com as obtidas, identificar os tipos de erro e preparar melhorias para uma segunda versão do prompt.
@@ -21,12 +25,15 @@ Avaliar o comportamento da inteligência artificial usando os 30 casos fictício
 - analisar os erros encontrados com o Prompt V1;
 - criar o Prompt V2 sem apagar ou modificar o Prompt V1;
 - explicar quais regras foram acrescentadas ou alteradas;
-- disponibilizar o Prompt V2 para uma nova avaliação.
+- disponibilizar o Prompt V2 para uma nova avaliação;
+- revisar o Prompt V2 após as regressões encontradas na primeira avaliação.
 
 
 ## Metodologia de avaliação
 
-Os 30 casos fictícios de `data/casos_teste.json` possuem uma classificação esperada definida previamente. Cada mensagem foi analisada pela IA utilizando o Prompt V1.
+Os 30 casos fictícios de `data/casos_teste.json` possuem uma classificação
+esperada definida previamente. Cada mensagem foi analisada pela IA com o Prompt
+V1 e, posteriormente, com as versões inicial e revisada do Prompt V2.
 
 O `evaluator.py` realizou as seguintes etapas:
 
@@ -37,7 +44,8 @@ O `evaluator.py` realizou as seguintes etapas:
 5. calculou as métricas gerais;
 6. salvou os resultados sem armazenar o conteúdo integral das mensagens.
 
-Os resultados foram armazenados em `data/resultados_prompt_v1.json`.
+Os resultados finais foram armazenados separadamente em
+`data/resultados_prompt_v1.json` e `data/resultados_prompt_v2.json`.
 
 ## Resultados do Prompt V1
 
@@ -99,7 +107,8 @@ A suíte completa de testes automáticos foi executada com:
 poetry run python -m unittest discover -s tests -v
 ```
 
-Foram executados 67 testes automáticos e todos passaram.
+Após a integração do Prompt V2 revisado, foram executados 94 testes automáticos
+e todos passaram.
 
 Os testes verificaram:
 
@@ -114,7 +123,8 @@ Os testes verificaram:
 - cálculo das métricas;
 - ausência das mensagens integrais no arquivo de resultados.
 
-Os testes automáticos utilizam simulações e não realizam chamadas reais à API. As 30 chamadas reais foram feitas separadamente durante a avaliação do Prompt V1.
+Os testes automáticos utilizam simulações e não realizam chamadas reais à API.
+As chamadas reais foram feitas separadamente durante as avaliações dos prompts.
 
 ## Limitações identificadas
 
@@ -129,17 +139,155 @@ Os testes automáticos utilizam simulações e não realizam chamadas reais à A
 - Links não são abertos ou verificados pelo sistema.
 - Informações importantes devem ser confirmadas diretamente por canais oficiais.
 
-## Comparação entre Prompt V1 e Prompt V2
+## Primeira avaliação do Prompt V2
+
+O primeiro Prompt V2 corrigiu os quatro erros encontrados no Prompt V1. Os
+casos `caso_15`, `caso_20`, `caso_23` e `caso_24` acertaram quando foram
+executados isoladamente. Uma amostra de cinco casos que já funcionavam também
+permaneceu correta.
+
+Entretanto, a nova execução dos 30 casos revelou quatro regressões:
+
+| Caso | Classificação esperada | Classificação obtida | Tipo de resultado |
+|---|---|---|---|
+| caso_13 | moderado | baixo_risco | erro de classificação |
+| caso_14 | moderado | baixo_risco | erro de classificação |
+| caso_16 | moderado | informacao_insuficiente | erro de classificação |
+| caso_27 | informacao_insuficiente | moderado | erro de classificação |
+
+As métricas da primeira avaliação do Prompt V2 foram:
+
+- total de casos: 30;
+- acertos: 26;
+- erros: 4;
+- taxa de acerto: 86,67%;
+- falsos positivos: 0;
+- falsos negativos: 0;
+- respostas inválidas: 0;
+- outros erros de classificação: 4.
+
+A regra relacionada a canais oficiais ficou forte demais e reduziu o risco de
+algumas situações concretas. Ao mesmo tempo, uma mensagem vaga sobre a
+confirmação de um pedido foi elevada para risco moderado. Assim, o primeiro
+Prompt V2 alterou quais casos falharam, mas não melhorou a taxa geral de acerto.
+
+Essas regressões foram encaminhadas ao colaborador. A revisão seguinte tornou
+explícita a diferença entre situações concretas que precisam ser verificadas,
+confirmações legítimas concluídas e mensagens genéricas sem contexto.
+
+## Avaliação do Prompt V2 revisado
+
+Antes da execução completa, foram repetidos os oito casos diretamente afetados
+pelas duas versões do Prompt V2:
+
+- `caso_13`;
+- `caso_14`;
+- `caso_15`;
+- `caso_16`;
+- `caso_20`;
+- `caso_23`;
+- `caso_24`;
+- `caso_27`.
+
+Os oito casos acertaram nessa execução isolada, com JSON válido. Em seguida, os
+30 casos foram executados novamente. O resultado final foi:
+
+- total de casos: 30;
+- acertos: 28;
+- erros: 2;
+- taxa de acerto: 93,33%;
+- falsos positivos: 1;
+- falsos negativos: 0;
+- respostas inválidas: 0;
+- outros erros de classificação: 1.
+
+Os dois erros finais foram:
+
+| Caso | Classificação esperada | Classificação obtida | Tipo de resultado |
+|---|---|---|---|
+| caso_12 | moderado | informacao_insuficiente | erro de classificação |
+| caso_24 | baixo_risco | moderado | falso positivo |
+
+O `caso_12` descreve uma atualização de cadastro sem identificar claramente o
+remetente. O modelo valorizou a falta de contexto e escolheu
+`informacao_insuficiente`, enquanto a classificação manual considerou a
+possível consequência e definiu risco moderado.
+
+O `caso_24` informa que um extrato está disponível e recomenda consultar o
+aplicativo oficial. Ele acertou como `baixo_risco` na execução isolada, mas foi
+classificado como `moderado` na execução completa. Essa diferença demonstra que
+modelos generativos podem variar entre chamadas mesmo quando mensagem, prompt e
+modelo permanecem iguais.
+
+Foi confirmado que `data/resultados_prompt_v2.json` contém exatamente 30
+resultados e não armazena o campo `mensagem` nem o texto integral dos casos.
+
+## Comparação final entre Prompt V1 e Prompt V2
 
 | Métrica | Prompt V1 | Prompt V2 |
 |---|---:|---:|
-| Total de casos | 30 | Pendente |
-| Acertos | 26 | Pendente |
-| Erros | 4 | Pendente |
-| Taxa de acerto | 86,67% | Pendente |
-| Falsos positivos | 1 | Pendente |
-| Falsos negativos | 0 | Pendente |
-| Respostas inválidas | 0 | Pendente |
-| Outros erros | 3 | Pendente |
+| Total de casos | 30 | 30 |
+| Acertos | 26 | 28 |
+| Erros | 4 | 2 |
+| Taxa de acerto | 86,67% | 93,33% |
+| Falsos positivos | 1 | 1 |
+| Falsos negativos | 0 | 0 |
+| Respostas inválidas | 0 | 0 |
+| Outros erros | 3 | 1 |
 
-A coluna do Prompt V2 será preenchida depois que a nova versão for implementada e avaliada.
+O Prompt V2 revisado aumentou a taxa de acerto em 6,66 pontos percentuais e
+reduziu a quantidade total de erros de quatro para dois. O número de falsos
+positivos permaneceu em um, e nenhuma das versões apresentou falso negativo ou
+resposta inválida nessa avaliação.
+
+Os casos `caso_15`, `caso_20` e `caso_23`, que falharam no V1, foram corrigidos
+na execução completa do V2 revisado. O `caso_24` continuou divergente, embora
+tenha mudado de `informacao_insuficiente` para `moderado` e tenha acertado na
+execução isolada. O `caso_12`, que acertava anteriormente, tornou-se um novo
+erro de classificação.
+
+## Decisões tomadas pela dupla
+
+- preservar o Prompt V1 para permitir uma comparação verificável;
+- revisar somente as regras responsáveis pelos erros, sem reescrever o prompt
+  inteiro;
+- testar primeiro os oito casos afetados antes de consumir 30 novas chamadas;
+- aceitar o resultado completo de 28 acertos como evidência final, sem repetir
+  chamadas apenas para buscar uma pontuação melhor;
+- documentar a variação do `caso_24` como limitação real da IA;
+- priorizar a ausência de falsos negativos e respostas inválidas;
+- manter mensagens integrais fora dos arquivos de resultados.
+
+## Como a API de IA foi utilizada
+
+A API do OpenRouter foi utilizada somente com mensagens fictícias e após as
+camadas locais de segurança e anonimização. O avaliador solicitou resposta
+estruturada, validou os campos e registrou apenas classificações e métricas. As
+oito chamadas de verificação foram realizadas antes das 30 chamadas da
+avaliação final.
+
+## Como o Codex foi utilizado
+
+O Codex foi utilizado para revisar os resultados, comparar as versões do
+prompt, conferir a ausência de mensagens integrais, executar os testes e
+organizar a documentação. As classificações esperadas permaneceram as que
+haviam sido definidas manualmente antes das consultas à IA.
+
+## Conclusão
+
+O Dia 4 foi concluído com uma comparação mensurável entre os prompts. O Prompt
+V2 revisado apresentou melhora de 86,67% para 93,33%, manteve zero falsos
+negativos e reduziu os outros erros de classificação. Os dois erros restantes e
+a variação observada no `caso_24` foram preservados no relatório para evitar a
+impressão de que a ferramenta possui comportamento determinístico ou garante
+uma classificação correta.
+
+## Evidências
+
+- `data/resultados_prompt_v1.json` com 30 resultados do Prompt V1;
+- `data/resultados_prompt_v2.json` com 30 resultados do Prompt V2 revisado;
+- 94 testes automáticos aprovados;
+- oito casos afetados aprovados na execução isolada;
+- 30 casos executados na avaliação final;
+- Prompt V1 preservado em `prompts.py`;
+- revisão do Prompt V2 integrada pelo commit do colaborador `8dfd315`.
