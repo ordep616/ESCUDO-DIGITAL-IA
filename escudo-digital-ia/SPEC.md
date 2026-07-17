@@ -1,10 +1,19 @@
 # Especificação do Produto - Escudo Digital IA
 
+> Estado da especificação: revisada no Dia 5 para representar o produto
+> efetivamente entregue. Funcionalidades ainda parciais estão identificadas ao
+> longo do documento.
+
 ## 1. Visão geral
 
 O Escudo Digital IA é um assistente educativo de segurança digital. O produto analisa mensagens fictícias ou anonimizadas, identifica sinais de risco e ensina o usuário a reconhecer possíveis golpes digitais.
 
 O sistema não deve afirmar com certeza que uma mensagem é fraudulenta ou legítima. Toda análise deve ser apresentada como orientação educativa e recomendar a verificação por canais oficiais.
+
+A versão atual oferece uma interface de terminal e uma interface web construída
+com Streamlit. As análises utilizam a API do OpenRouter com resposta estruturada
+em JSON. O Prompt V1 permanece ativo nas interfaces enquanto o Prompt V2 é
+avaliado no laboratório de testes.
 
 ## 2. Problema
 
@@ -98,15 +107,36 @@ O sistema poderá recomendar:
 
 ### 6.6 Modo educativo
 
-O produto deverá apresentar pelo menos dez exercícios fictícios. Após a resposta do usuário, o sistema deverá explicar os sinais de risco presentes em cada exercício.
+O produto apresenta dez exercícios fictícios armazenados localmente. Após a
+resposta do usuário, o sistema informa se a classificação está correta e explica
+os sinais de risco, as recomendações e a classificação esperada. O modo
+Aprender não consulta a API e não consome créditos.
 
 ### 6.7 Avaliação da resposta
 
-O usuário poderá informar se a análise foi `util` ou `nao_util`. O sistema deve salvar apenas a avaliação e as métricas permitidas, nunca a mensagem integral.
+Na interface web, o usuário pode informar se a análise foi `util` ou
+`nao_util`. O sistema salva no SQLite somente o valor da avaliação e o horário,
+nunca a mensagem integral. A apresentação de um resumo dessas avaliações ainda
+não foi implementada.
 
 ### 6.8 Estatísticas
 
-O sistema deverá apresentar a quantidade de testes executados, acertos, falsos positivos, falsos negativos e respostas inválidas.
+O avaliador executado pelo terminal apresenta e salva a quantidade de testes,
+acertos, erros, falsos positivos, falsos negativos, respostas inválidas e taxa
+de acerto. A exibição dessas estatísticas diretamente nas interfaces de uso é
+uma melhoria futura.
+
+### 6.9 Interfaces
+
+O produto possui duas formas de uso:
+
+- `main.py`: menu de terminal para analisar mensagens e executar o modo
+  Aprender;
+- `web.py`: interface web em Streamlit para analisar mensagens, executar o
+  modo Aprender e registrar avaliação `util` ou `nao_util`.
+
+As análises reais dependem da chave e dos créditos do OpenRouter. O modo
+Aprender funciona localmente.
 
 ## 7. Fluxo do sistema
 
@@ -116,13 +146,13 @@ A arquitetura completa, incluindo fluxo de dados, responsabilidades, tratamento 
 Usuário
   |
   v
-Interface e aviso de segurança
+main.py ou web.py
+  |
+  v
+safety.py - validação e limite de tamanho
   |
   v
 privacy.py - anonimização de dados
-  |
-  v
-safety.py - limites e regras de segurança
   |
   v
 ai_service.py - chamada à API de IA
@@ -134,15 +164,20 @@ validator.py - validação da resposta
 Resposta educativa e aviso de limitação
   |
   v
-Avaliação opcional do usuário
+Avaliação opcional do usuário na interface web
 ```
+
+O aviso completo de segurança é exibido no fluxo de terminal. Sua inclusão
+completa na interface web, antes e depois de cada análise, permanece pendente.
 
 ## 8. Responsabilidades dos arquivos
 
 | Arquivo | Responsabilidade |
 | --- | --- |
-| `main.py` | Iniciar a aplicação e coordenar o fluxo principal. |
-| `interface.py` | Receber a mensagem e apresentar o resultado. |
+| `main.py` | Receber a entrada do terminal e coordenar segurança, privacidade, API, armazenamento e validação. |
+| `web.py` | Apresentar a interface Streamlit, receber entradas e integrar análise, modo Aprender e avaliação de utilidade. |
+| `interface.py` | Formatar a introdução, o aviso e o resultado da interface de terminal. |
+| `aprender.py` | Carregar, validar e executar os dez exercícios educativos locais. |
 | `privacy.py` | Localizar e ocultar dados sensíveis. |
 | `safety.py` | Aplicar limites de tamanho e regras de segurança. |
 | `prompts.py` | Armazenar as versões dos prompts. |
@@ -194,9 +229,14 @@ A API deverá retornar uma estrutura JSON semelhante a:
 - Não abrir, visitar ou verificar links recebidos.
 - Não solicitar dados adicionais ao usuário.
 - Não recomendar pagamentos ou compartilhamento de informações.
-- Recusar ou limitar mensagens grandes demais.
+- Recusar mensagens vazias ou com mais de 1.000 caracteres.
 - Exibir o aviso de limitação em todas as análises.
 - Em caso de dúvida, recomendar a verificação por canal oficial.
+
+O armazenamento local utiliza SQLite para registrar apenas quantidade de
+caracteres, estimativa de tokens, horário e avaliação de utilidade. O banco
+local está no `.gitignore`. Os arquivos de resultados da avaliação registram
+somente identificadores, classificações, validade do JSON e tipos de erro.
 
 ## 11. Mensagem fixa de segurança
 
@@ -212,7 +252,12 @@ O sistema:
 - não abre nem verifica links;
 - não substitui profissionais de segurança;
 - não garante que uma mensagem seja legítima ou fraudulenta;
-- deve responder `informacao_insuficiente` quando não houver contexto suficiente.
+- deve responder `informacao_insuficiente` quando não houver contexto suficiente;
+- depende da disponibilidade, dos créditos e do modelo configurado no OpenRouter;
+- utiliza anonimização baseada em padrões, que pode não reconhecer todos os formatos existentes;
+- ainda não apresenta estatísticas ou resumo das avaliações de utilidade na interface;
+- ainda precisa exibir o aviso fixo completo na interface web;
+- mantém o Prompt V1 nas interfaces enquanto o Prompt V2 passa pela avaliação final.
 
 ## 13. Critérios de sucesso
 
@@ -229,7 +274,7 @@ O projeto será considerado funcional quando:
 - exibir o aviso de limitação em todas as análises;
 - não armazenar mensagens integrais;
 - possuir modo educativo com pelo menos dez exercícios;
-- poder ser instalado e executado seguindo o `README.md`.
+- poder ser instalado e executado seguindo o [`README.md`](../README.md).
 
 ## 14. Casos de teste
 
@@ -257,6 +302,26 @@ As métricas mínimas são:
 
 Um falso positivo ocorre quando uma mensagem legítima é classificada como perigosa. Um falso negativo ocorre quando uma mensagem perigosa é classificada como segura e deve ser tratado como o erro mais grave do produto.
 
+### 15.1 Resultados registrados
+
+O Prompt V1 foi executado nos 30 casos e obteve:
+
+- 26 acertos e 4 erros;
+- taxa de acerto de 86,67%;
+- 1 falso positivo;
+- 0 falsos negativos;
+- 0 respostas inválidas;
+- 3 outros erros de classificação.
+
+A primeira avaliação completa do Prompt V2 também obteve 26 acertos, 4 erros
+e taxa de acerto de 86,67%. Essa versão corrigiu os quatro erros observados no
+V1, mas criou quatro novas divergências. Por esse motivo, o resultado do V2 é
+preliminar e a comparação final permanece pendente até a revisão do prompt e a
+nova execução dos 30 casos.
+
+Os resultados são preservados separadamente em
+`data/resultados_prompt_v1.json` e `data/resultados_prompt_v2.json`.
+
 ## 16. Fora do escopo
 
 Não fazem parte desta versão:
@@ -271,10 +336,50 @@ Não fazem parte desta versão:
 
 ## 17. Evidências de conclusão
 
-- `data/casos_teste.json` com 30 casos classificados;
-- arquitetura documentada;
-- testes automáticos de privacidade e avaliação;
-- relatórios diários preenchidos;
-- resultados registrados sem dados pessoais;
-- histórico de commits pequenos e compreensíveis;
-- `README.md` com instruções de instalação, configuração e execução.
+| Evidência | Estado atual |
+| --- | --- |
+| `data/casos_teste.json` com 30 casos classificados | Concluído |
+| Arquitetura documentada em `docs/ARQUITETURA.md` | Concluído |
+| Seis tipos de dados anonimizados | Concluído |
+| Testes automáticos dos principais módulos | Concluído |
+| Modo Aprender com dez exercícios | Concluído |
+| Interface de terminal | Concluído |
+| Interface web em Streamlit | Funcional; aviso completo ainda pendente |
+| Avaliação `util` ou `nao_util` | Registro concluído; resumo ainda pendente |
+| Resultados registrados sem mensagens integrais | Concluído |
+| Prompt V1 preservado | Concluído |
+| Prompt V2 e comparação final | Em avaliação |
+| Relatórios dos cinco dias | Dias 1 a 3 concluídos; Dia 4 em andamento; Dia 5 pendente |
+| Relatório final | Pendente |
+| Histórico de commits pequenos e compreensíveis | Concluído até a etapa atual |
+| [`README.md`](../README.md) com instalação, configuração e execução | Atualizado; métricas finais do V2 ainda pendentes |
+
+## 18. Resumo do escopo entregue
+
+### Entregue
+
+- integração com o OpenRouter e resposta estruturada;
+- tratamento de timeout, autenticação, indisponibilidade e resposta inválida;
+- anonimização dos seis tipos obrigatórios;
+- validação de entrada e limite de 1.000 caracteres;
+- terminal e interface web;
+- modo Aprender com dez exercícios;
+- avaliação de utilidade sem armazenamento da mensagem;
+- armazenamento de métricas permitidas em SQLite;
+- 30 casos classificados e avaliador V1/V2;
+- testes automáticos;
+- documentação dos Dias 1 a 3 concluída e documentação do Dia 4 em andamento.
+
+### Parcialmente entregue
+
+- Prompt V2: criado e avaliado, mas ainda precisa de revisão e avaliação final;
+- estatísticas: disponíveis pelo avaliador e nos arquivos JSON, mas não na interface;
+- avaliação de utilidade: registrada, mas sem resumo estatístico;
+- aviso de segurança: completo no terminal e ainda incompleto na interface web;
+- documentação final: README e SPEC atualizados, aguardando métricas finais e relatórios de encerramento.
+
+### Não entregue
+
+- relatório do Dia 5;
+- relatório final concluído;
+- apresentação final e versão de entrega marcada no Git.
