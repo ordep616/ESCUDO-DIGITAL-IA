@@ -20,7 +20,7 @@ Avaliar o comportamento da inteligência artificial usando os 30 casos fictício
 - salvar os resultados sem armazenar as mensagens integrais;
 - preparar a comparação entre o Prompt V1 e o Prompt V2.
 
-### Atividades do colaborador
+### Atividades do enrico
 
 - analisar os erros encontrados com o Prompt V1;
 - criar o Prompt V2 sem apagar ou modificar o Prompt V1;

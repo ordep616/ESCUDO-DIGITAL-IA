@@ -18,7 +18,7 @@ from validator import CLASSIFICACOES_PERMITIDAS, validar_resposta_ia
 
 
 BASE_DIR = Path(__file__).resolve().parent
-CASOS_PATH = BASE_DIR / "data" / "casos_teste.json"
+CASOS_PATH = BASE_DIR / "data" / "casos_teste.json" 
 RESULTADOS_V1_PATH = BASE_DIR / "data" / "resultados_prompt_v1.json"
 RESULTADOS_V2_PATH = BASE_DIR / "data" / "resultados_prompt_v2.json"
 PROMPTS_DISPONIVEIS = {

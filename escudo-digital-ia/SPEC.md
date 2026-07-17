@@ -1,9 +1,4 @@
 # Especificação do Produto - Escudo Digital IA
-
-> Estado da especificação: revisada no Dia 5 para representar o produto
-> efetivamente entregue. Funcionalidades ainda parciais estão identificadas ao
-> longo do documento.
-
 ## 1. Visão geral
 
 O Escudo Digital IA é um assistente educativo de segurança digital. O produto analisa mensagens fictícias ou anonimizadas, identifica sinais de risco e ensina o usuário a reconhecer possíveis golpes digitais.

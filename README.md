@@ -166,6 +166,15 @@ poetry run python -m unittest discover -s tests -v
 
 Uma execução correta termina com `OK`.
 
+Na última validação realizada após a integração do Prompt V2 revisado, a suíte
+completa apresentou:
+
+```text
+Testes automatizados: 94
+Sucessos: 94
+Falhas: 0
+```
+
 Para testar somente um módulo, informe o nome do arquivo. Exemplo:
 
 ```bash
@@ -210,19 +219,43 @@ das mensagens.
 
 ## Resultados registrados
 
-O Prompt V1 foi executado nos 30 casos fictícios e obteve:
+Os prompts V1 e V2 foram executados nos mesmos 30 casos fictícios. A avaliação
+final registrou:
 
-- 26 acertos;
-- 4 erros;
-- taxa de acerto de 86,67%;
-- 1 falso positivo;
-- 0 falsos negativos;
-- 0 respostas inválidas.
+| Métrica | Prompt V1 | Prompt V2 |
+| --- | ---: | ---: |
+| Casos executados | 30 | 30 |
+| Acertos | 26 | 28 |
+| Erros | 4 | 2 |
+| Taxa de acerto | 86,67% | 93,33% |
+| Falsos positivos | 1 | 1 |
+| Falsos negativos | 0 | 0 |
+| Respostas inválidas | 0 | 0 |
+| Outros erros de classificação | 3 | 1 |
 
-A primeira avaliação completa do Prompt V2 também obteve 26 acertos e taxa de
-86,67%. Ela corrigiu quatro erros do V1, mas criou quatro novas divergências.
-Esse resultado é preliminar: a comparação final deve ser atualizada depois da
-revisão do Prompt V2 e da nova execução dos 30 casos.
+O Prompt V2 aumentou a quantidade de acertos de 26 para 28 e elevou a taxa de
+acerto em 6,66 pontos percentuais. Ele corrigiu os casos `caso_15`, `caso_20` e
+`caso_23`. O `caso_24` continuou divergente e surgiu uma nova divergência no
+`caso_12`. Nenhuma das versões produziu falso negativo ou resposta inválida
+nessa avaliação.
+
+Os resultados refletem uma execução específica da API e podem variar em novas
+chamadas. Os erros restantes são mantidos na documentação para demonstrar as
+limitações reais do sistema.
+
+## Demonstrações da entrega
+
+A apresentação final utiliza cinco situações fictícias:
+
+1. mensagem de alto risco com pedido de senha ou código;
+2. mensagem legítima sem pedido perigoso;
+3. mensagem ambígua classificada como informação insuficiente;
+4. mensagem com dados fictícios para demonstrar a anonimização local;
+5. caso em que a comparação registrada mostra a evolução do Prompt V1 para o
+   Prompt V2.
+
+As demonstrações devem utilizar apenas mensagens fictícias e não devem expor a
+chave da API, o arquivo `.env` ou dados pessoais reais.
 
 ## Privacidade e segurança
 
@@ -292,15 +325,16 @@ escudo-digital-ia/
 - A análise depende da disponibilidade, das regras, dos créditos e do modelo do
   OpenRouter.
 - O modelo configurado precisa aceitar a saída estruturada solicitada.
-- As interfaces de análise utilizam atualmente o Prompt V1; o Prompt V2 está em
-  avaliação antes de substituir a versão utilizada pelo produto.
+- As interfaces de análise utilizam atualmente o Prompt V1. O Prompt V2 foi
+  avaliado no laboratório e melhorou a taxa geral, mas ainda possui duas
+  divergências e não substitui automaticamente a versão usada nas interfaces.
 - O produto é educativo e não substitui banco, polícia, suporte oficial ou
   orientação profissional.
 
 ## Melhorias futuras
 
-- concluir a revisão e a comparação final do Prompt V2;
-- reduzir divergências de classificação sem aumentar falsos negativos;
+- investigar as divergências restantes dos casos `caso_12` e `caso_24`;
+- avaliar a adoção do Prompt V2 nas interfaces sem aumentar falsos negativos;
 - ampliar os testes de integração do fluxo completo;
 - melhorar a acessibilidade e a experiência da interface web;
 - apresentar estatísticas de testes e feedback diretamente na interface;
