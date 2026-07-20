@@ -74,7 +74,7 @@ CAMINHO_LOGO = (
     / "escudo_digital_ia_security_network.png"
 )
 
-MODOS_WEB = {"menu", "analise", "aprender", "sair"}
+MODOS_WEB = {"menu", "analise", "aprender"}
 MODAIS_WEB = {"analise", "aprender"}
 ALTURA_MODAL = 520
 
@@ -495,7 +495,7 @@ textarea,
     padding-bottom: 3.75rem !important;
 }
 
-.st-key-escudo-upload-imagem {
+[class*="st-key-escudo-upload-imagem-"] {
     position: absolute;
     right: 14px;
     bottom: 14px;
@@ -503,18 +503,18 @@ textarea,
     width: 46px !important;
 }
 
-.st-key-escudo-upload-imagem [data-testid="stFileUploader"] {
+[class*="st-key-escudo-upload-imagem-"] [data-testid="stFileUploader"] {
     width: 46px !important;
 }
 
-.st-key-escudo-upload-imagem [data-testid="stFileUploader"] > label,
-.st-key-escudo-upload-imagem [data-testid="stFileUploaderDropzoneInstructions"],
-.st-key-escudo-upload-imagem [data-testid="stFileUploaderFile"],
-.st-key-escudo-upload-imagem small {
+[class*="st-key-escudo-upload-imagem-"] [data-testid="stFileUploader"] > label,
+[class*="st-key-escudo-upload-imagem-"] [data-testid="stFileUploaderDropzoneInstructions"],
+[class*="st-key-escudo-upload-imagem-"] [data-testid="stFileUploaderFile"],
+[class*="st-key-escudo-upload-imagem-"] small {
     display: none !important;
 }
 
-.st-key-escudo-upload-imagem section {
+[class*="st-key-escudo-upload-imagem-"] section {
     width: 46px !important;
     height: 46px !important;
     min-height: 46px !important;
@@ -526,12 +526,12 @@ textarea,
     overflow: hidden;
 }
 
-.st-key-escudo-upload-imagem section:hover {
+[class*="st-key-escudo-upload-imagem-"] section:hover {
     background: rgba(0, 217, 255, 0.10) !important;
     box-shadow: 0 0 18px rgba(0, 217, 255, 0.18) !important;
 }
 
-.st-key-escudo-upload-imagem button {
+[class*="st-key-escudo-upload-imagem-"] button {
     display: grid !important;
     place-items: center !important;
     width: 46px !important;
@@ -547,11 +547,11 @@ textarea,
     font-size: 0 !important;
 }
 
-.st-key-escudo-upload-imagem button > * {
+[class*="st-key-escudo-upload-imagem-"] button > * {
     display: none !important;
 }
 
-.st-key-escudo-upload-imagem button::before {
+[class*="st-key-escudo-upload-imagem-"] button::before {
     content: "";
     display: block;
     width: 31px;
@@ -565,7 +565,7 @@ textarea,
         center / contain no-repeat;
 }
 
-.st-key-escudo-upload-imagem button:hover {
+[class*="st-key-escudo-upload-imagem-"] button:hover {
     transform: none !important;
 }
 
@@ -873,6 +873,16 @@ def preparar_estado_analise(estado: MutableMapping[str, Any]) -> None:
         estado["resultado_analise"] = None
     if "feedback_registrado" not in estado:
         estado["feedback_registrado"] = False
+    if "versao_analise" not in estado:
+        estado["versao_analise"] = 0
+
+
+def iniciar_nova_analise(estado: MutableMapping[str, Any]) -> None:
+    estado["resultado_analise"] = None
+    estado["feedback_registrado"] = False
+    estado["versao_analise"] = int(
+        _estado_get(estado, "versao_analise", 0)
+    ) + 1
 
 
 def preparar_estado_menu(estado: MutableMapping[str, Any]) -> None:
@@ -1119,45 +1129,67 @@ def renderizar_detalhes_aprender(exercicio: dict[str, Any]) -> None:
 
 def renderizar_resultado_analise(resultado: dict[str, Any]) -> None:
     classificacao = resultado["classificacao"]
-    texto_confianca, valor_confianca = formatar_confianca(resultado["confianca"])
-
-    st.success("Análise concluída")
-
-    coluna_resultado, coluna_confianca = st.columns(2)
-    coluna_resultado.metric(
-        "Resultado",
-        rotulo_classificacao(classificacao),
+    texto_confianca, valor_confianca = formatar_confianca(
+        resultado["confianca"]
     )
-    coluna_confianca.metric("Certeza da análise", texto_confianca)
+
+    icones = {
+        "alto_risco": "⚠️",
+        "moderado": "🔎",
+        "baixo_risco": "✅",
+        "informacao_insuficiente": "ℹ️",
+    }
+    icone = icones.get(classificacao, "ℹ️")
+
+    sinais = [
+        rotulo_item_aprender(str(item))
+        for item in resultado["sinais"]
+    ]
+    recomendacoes = [
+        rotulo_item_aprender(str(item))
+        for item in resultado["recomendacoes"]
+    ]
+
+    coluna_resultado, coluna_confianca = st.columns([2, 1])
+
+    with coluna_resultado:
+        st.markdown(
+            f"### {icone} {rotulo_classificacao(classificacao)}"
+        )
+        st.write(descricao_classificacao(classificacao))
+
+    with coluna_confianca:
+        st.metric("Confiança da análise", texto_confianca)
+
     st.progress(valor_confianca)
     st.caption(
-        "Esta porcentagem indica o quanto a IA está segura da classificação "
-        "mostrada acima. Ela não mede se a mensagem é confiável ou segura."
+        "A porcentagem indica o quanto a IA está segura desta "
+        "classificação. Não significa que a mensagem seja segura "
+        "ou verdadeira."
     )
 
-    if classificacao == "alto_risco":
-        st.error(descricao_classificacao(classificacao))
-    elif classificacao == "moderado":
-        st.warning(descricao_classificacao(classificacao))
-    elif classificacao == "informacao_insuficiente":
-        st.info(descricao_classificacao(classificacao))
-    else:
-        st.success(descricao_classificacao(classificacao))
+    st.divider()
 
-    escrever_lista(
-        "Sinais identificados",
-        resultado["sinais"],
-        "Nenhum sinal identificado.",
-    )
-
-    escrever_lista(
-        "Recomendações",
-        resultado["recomendacoes"],
-        "Nenhuma recomendação específica.",
-    )
-
-    st.write("**Explicação:**")
+    st.write("**Por que chegamos a esse resultado**")
     st.write(resultado["explicacao_simples"])
+
+    st.divider()
+
+    coluna_sinais, coluna_recomendacoes = st.columns(2)
+
+    with coluna_sinais:
+        escrever_lista(
+            "Sinais encontrados",
+            sinais,
+            "Nenhum sinal específico foi identificado.",
+        )
+
+    with coluna_recomendacoes:
+        escrever_lista(
+            "O que fazer agora",
+            recomendacoes,
+            "Nenhuma recomendação específica.",
+        )
 
 
 def renderizar_estado_resposta_aprender(acertou: bool, esperado: str | None) -> None:
@@ -1178,12 +1210,13 @@ def renderizar_feedback_analise() -> None:
     st.write("**Esta análise foi útil?**")
 
     feedback_registrado = st.session_state["feedback_registrado"]
-    coluna_util, coluna_nao_util = st.columns(2)
+    coluna_util, coluna_nao_util, coluna_nova = st.columns(3)
 
     if coluna_util.button(
         "Útil",
         key="feedback_util",
         disabled=feedback_registrado,
+        use_container_width=True,
     ):
         try:
             st.success(registrar_feedback_analise("util"))
@@ -1195,12 +1228,21 @@ def renderizar_feedback_analise() -> None:
         "Não útil",
         key="feedback_nao_util",
         disabled=feedback_registrado,
+        use_container_width=True,
     ):
         try:
             st.success(registrar_feedback_analise("nao_util"))
             st.session_state["feedback_registrado"] = True
         except Exception as erro:
             st.error(f"Não foi possível registrar a avaliação: {erro}")
+
+    if coluna_nova.button(
+        "Nova análise",
+        key="nova_analise",
+        use_container_width=True,
+    ):
+        iniciar_nova_analise(st.session_state)
+        st.rerun()
 
     if st.session_state["feedback_registrado"]:
         st.caption("Sua avaliação já foi registrada.")
@@ -1274,18 +1316,20 @@ def processar_entrada_analise(
 
 
 def renderizar_entrada_analise() -> tuple[str, Any]:
+    versao = st.session_state["versao_analise"]
+
     with st.container(key="escudo-caixa-mensagem"):
         mensagem = st.text_area(
             "Cole uma mensagem fictícia ou previamente anonimizada:",
             height=180,
-            key="mensagem_analise",
+            key=f"mensagem_analise_{versao}",
         )
         arquivo_imagem = st.file_uploader(
             "Adicionar imagem",
             type=TIPOS_IMAGEM_UPLOAD,
             accept_multiple_files=False,
             label_visibility="collapsed",
-            key="escudo-upload-imagem",
+            key=f"escudo-upload-imagem-{versao}",
         )
 
     return mensagem, arquivo_imagem
@@ -1313,7 +1357,10 @@ def renderizar_aba_analise(carregamento_ia: Any | None = None) -> None:
         st.warning(AVISO_ENVIO_IMAGEM)
         autorizado = st.checkbox(
             AUTORIZACAO_ENVIO_IMAGEM,
-            key="autorizacao_imagem_analise",
+            key=(
+                "autorizacao_imagem_analise_"
+                f"{st.session_state['versao_analise']}"
+            ),
         )
 
     analisar = st.button(
@@ -1437,17 +1484,13 @@ def renderizar_menu_principal() -> None:
     st.subheader("Menu principal")
     carregamento_ia = st.empty()
 
-    coluna_analise, coluna_aprender, coluna_sair = st.columns(3)
+    coluna_analise, coluna_aprender = st.columns(2)
 
     if coluna_analise.button("Analisar mensagem", use_container_width=True):
         selecionar_modal(st.session_state, "analise")
 
     if coluna_aprender.button("Iniciar modo Aprender", use_container_width=True):
         selecionar_modal(st.session_state, "aprender")
-
-    if coluna_sair.button("Sair", use_container_width=True):
-        selecionar_modo(st.session_state, "sair")
-        st.rerun()
 
     if st.session_state["modal_web"] == "analise":
         renderizar_modal_analise(carregamento_ia)
@@ -1459,12 +1502,6 @@ def renderizar_botao_voltar_menu() -> None:
     if st.button("Voltar ao menu"):
         selecionar_modo(st.session_state, "menu")
         st.rerun()
-
-
-def renderizar_tela_sair() -> None:
-    st.subheader("Sair")
-    st.info("Aplicação encerrada. Você pode fechar esta aba do navegador.")
-    renderizar_botao_voltar_menu()
 
 
 def renderizar_modal_analise(carregamento_ia: Any | None = None) -> None:
@@ -1501,10 +1538,7 @@ def executar_web() -> None:
 
     preparar_estado_menu(st.session_state)
 
-    if st.session_state["modo_web"] == "sair":
-        renderizar_tela_sair()
-    else:
-        renderizar_menu_principal()
+    renderizar_menu_principal()
 
 
 if __name__ == "__main__":

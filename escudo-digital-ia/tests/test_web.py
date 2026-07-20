@@ -17,6 +17,7 @@ from web import detalhes_aprender_html
 from web import dividir_explicacao_aprender
 from web import fechar_modal
 from web import instalar_atalhos_teclado
+from web import iniciar_nova_analise
 from web import mensagem_feedback_aprender
 from web import processar_entrada_analise
 from web import preparar_estado_menu, selecionar_modo
@@ -137,12 +138,22 @@ class WebTests(unittest.TestCase):
         selecionar_modo(estado, "aprender")
         self.assertEqual(estado["modo_web"], "aprender")
 
-        selecionar_modo(estado, "sair")
-        self.assertEqual(estado["modo_web"], "sair")
-
     def test_rejeita_modo_web_invalido(self) -> None:
         with self.assertRaisesRegex(ValueError, "modo da web inválido"):
             selecionar_modo({}, "configuracao")
+
+    def test_nova_analise_limpa_resultado_e_avanca_versao(self) -> None:
+        estado = {
+            "resultado_analise": {"classificacao": "alto_risco"},
+            "feedback_registrado": True,
+            "versao_analise": 2,
+        }
+
+        iniciar_nova_analise(estado)
+
+        self.assertIsNone(estado["resultado_analise"])
+        self.assertFalse(estado["feedback_registrado"])
+        self.assertEqual(estado["versao_analise"], 3)
 
     def test_seleciona_modal_abaixo_do_menu_principal(self) -> None:
         estado = {"modal_web": None}
